@@ -14,6 +14,8 @@ Run `npm run script:watch` for it to auto-update - note parcel adds a bunch of r
 You need vercel installed. 
 `npm i -g vercel`
 
+put your secret in `.env` (see `.env.template`)
+
 Run the backend with `npm run localdev` or run both backend and parcel watch with `npm start`
 
 A function that generates the script text to be pasted into someone's document:
