@@ -33,7 +33,7 @@ export default async function handler(
   const integrity = `integrity="${integrityHash}"`;
   // const integrity = ``;
 
-  const scriptSrc = new URL('pages/script.js', selfURL).href;
+  const scriptSrc = new URL('/script.js', selfURL).href;
 
 
   const script = `<script>
