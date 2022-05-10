@@ -18,6 +18,8 @@ export default async function handler(
   const wallet = request.query.wallet
   const projectName = request.query.projectName
 
+  console.log(`generating script for ${projectName}`)
+
   safeInputStrings({
     wallet, projectName
   })
@@ -28,9 +30,9 @@ export default async function handler(
     projectName
   }
 
-  const integrityHash = await ssri.fromStream(fs.createReadStream('./public/script.js'), {
+  const integrityHash = (await ssri.fromStream(fs.createReadStream('./public/script.js'), {
     algorithms: ['sha384']
-  }).toString()
+  })).toString()
   const integrity = `integrity="${integrityHash}"`;
   // const integrity = ``;
 
