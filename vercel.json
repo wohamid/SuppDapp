@@ -1,0 +1,11 @@
+{
+    "functions": {
+      "api/generate.js": {
+        "includeFiles": "public/**"
+      },
+      "api/generate2.js": {
+        "includeFiles": "public/**"
+      }
+    }
+  }
+  
