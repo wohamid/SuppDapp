@@ -2,33 +2,45 @@
   "name": "sup-dapp",
   "version": "1.0.0",
   "description": "",
-  "source": "src/script.js",
+  "source": [
+    "src/script.js",
+    "src/siwe.html",
+    "src/index.html"
+  ],
   "targets": {
     "modern": {
-      "outputFormat":"global",
+      "outputFormat": "global",
       "optimize": true,
-      "distDir":"public",
+      "distDir": "public",
       "engines": {
         "browsers": "Chrome 80, FireFox 90"
       }
     }
   },
   "scripts": {
-    "start": "npm run script:watch& npm run localdev",
-    "build": "npm run script:build && next build",
+    "start": "npm run script:build& npm run localdev",
+    "build": "patch-package && npm run script:build && next build",
     "localdev": "vercel dev",
     "script:watch": "parcel watch",
-    "script:build": "parcel build"
+    "script:build": "parcel build",
+    "postinstall": "patch-package"
   },
   "type": "module",
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "buffer": "^6.0.3",
+    "events": "^3.3.0",
     "next": "^12.1.6",
-    "parcel": "^2.5.0"
+    "parcel": "^2.5.0",
+    "patch-package": "^6.4.7",
+    "process": "^0.11.10"
   },
   "dependencies": {
+    "cookies": "^0.8.0",
+    "ethers": "^5.5.0",
     "jsonwebtoken": "^8.5.1",
+    "siwe": "1.1.6",
     "ssri": "^9.0.0"
   }
 }

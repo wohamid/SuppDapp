@@ -1,0 +1,52 @@
+diff --git a/node_modules/apg-js/src/apg-api/scanner.js b/node_modules/apg-js/src/apg-api/scanner.js
+index bde1a2b..63ab73e 100644
+--- a/node_modules/apg-js/src/apg-api/scanner.js
++++ b/node_modules/apg-js/src/apg-api/scanner.js
+@@ -13,7 +13,7 @@
+ // - catalog the lines - create an array with a line object for each line.
+ // The object carries information about the line number and character length which is used
+ // by the parser generator primarily for error reporting.
+-module.exports = function exports(chars, errors, strict, trace) {
++module.exports = function (chars, errors, strict, trace) {
+   const thisFileName = 'scanner.js: ';
+   const apglib = require('../apg-lib/node-exports');
+   const grammar = new (require('./scanner-grammar'))();
+diff --git a/node_modules/apg-js/src/apg-api/semantic-callbacks.js b/node_modules/apg-js/src/apg-api/semantic-callbacks.js
+index d57125b..7407ed1 100644
+--- a/node_modules/apg-js/src/apg-api/semantic-callbacks.js
++++ b/node_modules/apg-js/src/apg-api/semantic-callbacks.js
+@@ -7,7 +7,7 @@
+ // See:<br>
+ // `./dist/abnf-for-sabnf-grammar.bnf`<br>
+ // for the grammar file these callback functions are based on.
+-module.exports = function exports() {
++module.exports = function () {
+   const apglib = require('../apg-lib/node-exports');
+   const id = apglib.ids;
+ 
+diff --git a/node_modules/apg-js/src/apg-api/show-rules.js b/node_modules/apg-js/src/apg-api/show-rules.js
+index 7121cb3..281d08c 100644
+--- a/node_modules/apg-js/src/apg-api/show-rules.js
++++ b/node_modules/apg-js/src/apg-api/show-rules.js
+@@ -2,7 +2,7 @@
+  *   copyright: Copyright (c) 2021 Lowell D. Thomas, all rights reserved
+  *     license: BSD-2-Clause (https://opensource.org/licenses/BSD-2-Clause)
+  *   ********************************************************************************* */
+-module.exports = (function exports() {
++module.exports = (function () {
+   const thisFileName = 'show-rules.js';
+   // Display the rules.
+   // This function may be called before the attributes calculation.
+diff --git a/node_modules/apg-js/src/apg-api/syntax-callbacks.js b/node_modules/apg-js/src/apg-api/syntax-callbacks.js
+index 992ecce..c007a4b 100644
+--- a/node_modules/apg-js/src/apg-api/syntax-callbacks.js
++++ b/node_modules/apg-js/src/apg-api/syntax-callbacks.js
+@@ -7,7 +7,7 @@
+ // See:<br>
+ // `./dist/abnf-for-sabnf-grammar.bnf`<br>
+ // for the grammar file these callback functions are based on.
+-module.exports = function exports() {
++module.exports = function () {
+   const thisFileName = 'syntax-callbacks.js: ';
+   const apglib = require('../apg-lib/node-exports');
+   const id = apglib.ids;

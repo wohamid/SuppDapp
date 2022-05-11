@@ -1,6 +1,6 @@
 import ssri from 'ssri';
 import fs from 'fs';
-import { encrypt } from '../lib/crypt.js';
+import { encryptObj } from '../lib/crypt.js';
 
 import { CONFIG_KEY } from '../src/shared.js'
 
@@ -25,7 +25,7 @@ export default async function handler(
   })
 
 
-  const encryptedConfig = encrypt(JSON.stringify({ wallet }), key);
+  const encryptedConfig = encryptObj(key, { wallet });
   const config = {
     projectName
   }

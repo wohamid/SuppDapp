@@ -16,7 +16,7 @@ You need vercel installed.
 
 put your secret in `.env` (see `.env.template`)
 
-Run the backend with `npm run localdev` or run both backend and parcel watch with `npm start`
+Run the backend with `npm run localdev` or run both backend and parcel build with `npm start`
 
 A function that generates the script text to be pasted into someone's document:
 
@@ -38,3 +38,12 @@ window['sup-dapp'] = {
 
 Remove the integrity bit when you want to livereload while in development. 
 When running localdev it seems vercel is passing some internal port to the host header, so the script url generated locally is not correct. It will work when deployed. For local run you need to replace stuff like `https://127.0.0.1:41487` with `http://localhost:3000`
+
+## sign in with your wallet
+
+This will wrap your local server with https for testing (goes through thirdparty, so don't use your real wallet maybe)
+```
+ngrok http 3000
+```
+
+then go to the site address `/siwe.html` to test out the signin
