@@ -45,9 +45,10 @@
     "jsonwebtoken": "^8.5.1",
     "orbit-db": "^0.28.6",
     "siwe": "1.1.6",
-    "ssri": "^9.0.0"
+    "ssri": "^9.0.0",
+    "uuid": "^8.3.2"
   },
-  "resolution":{ 
-    "blockstore-core":"1.0.2"
+  "resolution": {
+    "blockstore-core": "1.0.2"
   }
 }
