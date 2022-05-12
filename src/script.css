@@ -1,0 +1,17 @@
+.supp-btn {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-color: greenyellow;
+    box-shadow: 0 0 10px #000;
+    text-align: center;
+    line-height: 60px;
+    vertical-align: middle;
+}
+
+
+.supp-corner {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+}

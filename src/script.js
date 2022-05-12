@@ -1,10 +1,114 @@
-import {CONFIG_KEY} from './shared.js'
+import cssText from 'bundle-text:./script.css';
 
+import { ethers } from 'ethers';
+import { SiweMessage } from 'siwe';
 
-function main(config, body){
-  console.log('hello', config.projectName,'!')
+const domain = window.location.host;
+const origin = window.location.origin;
 
-  // TODO: to make sure our CSS is not affected by the main site, we either render to an iframe or use a web component for a wrapper.
-  // Using a web conmponent could be nice, because we'd add type=module to the script tag we generate and use native features then. The customer can decide where they want the <supdapp> tag inserted. 
+class SuppDapp extends HTMLElement {
+  constructor() {
+    // Always call super first in constructor
+    super();
+    // Create a shadow root
+    const shadow = this.attachShadow({ mode: 'closed' }); // sets and returns 'this.shadowRoot'
+    const style = document.createElement('style');
+    style.textContent = cssText;
+    const wrapper = document.createElement('div')
+    wrapper.classList.add('supp-corner');
+    this.wrapper = wrapper
+    const btn = document.createElement('div')
+    btn.classList.add('supp-btn');
+    this.suppBtn = btn;
+    wrapper.append(btn);
+    shadow.append(style, wrapper);
+
+  }
+  connectedCallback() {
+    this.config = {
+      project: this.getAttribute('project'),
+      key: this.getAttribute('key'),
+      host: this.getAttribute('host'),
+    }
+    console.log(this.config)
+    this.showFreshCollapsedState()
+    this.suppBtn.addEventListener('click', async (e) => {
+      if (!window.ethereum) {
+        // tell them to install metamask
+        alert('You need a wallet in your browser');
+        window.open('https://metamask.io/');
+        return;
+      }
+
+      await this.ensureSigner()
+      if (!this.isAuthorized) {
+        this.signInWithWallet()
+      } else {
+
+        alert('do stuff')
+      }
+    })
+
+  }
+  showFreshCollapsedState() {
+    fetch(`${this.config.host}/api/ping`).then(res => {
+      if (res.status === 200) {
+        this.isAuthorized = true
+        return res.json()
+      }
+    }).then((data) => {
+      if (!data) {
+        this.suppBtn.innerText = 'sign in'
+        return;
+      }
+      this.suppBtn.innerText = data.messages
+    })
+  }
+  async ensureSigner() {
+    if (!this.signer) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      await provider.send('eth_requestAccounts', [])
+        .then(() => this.signer = provider.getSigner(), () => console.log('user rejected request'));
+    }
+    return this.signer
+  }
+  async signInWithWallet() {
+    const message = await this.createSiweMessage(
+      await this.signer.getAddress(),
+      'Sign in with your wallet to see conversations'
+    );
+    const signature = await this.signer.signMessage(message);
+
+    const res = await fetch(`${this.config.host}/api/siwe`, {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message, signature }),
+      credentials: 'include'
+    });
+    if (res.status === 200) {
+      this.showFreshCollapsedState()
+    }
+    console.log(await res.text());
+
+  }
+  async createSiweMessage(address, statement) {
+    const res = await fetch(`${this.config.host}/api/siwe`, {
+      credentials: 'include',
+    });
+    const message = new SiweMessage({
+      domain,
+      address,
+      statement,
+      uri: origin,
+      version: '1',
+      chainId: '1',
+      nonce: await res.text()
+    });
+    return message.prepareMessage();
+  }
+
 }
-main(window[CONFIG_KEY], document.body)
+
+window.customElements.define('supp-dapp', SuppDapp);

@@ -2,8 +2,6 @@ import ssri from 'ssri';
 import fs from 'fs';
 import { encryptObj } from '../lib/crypt.js';
 
-import { CONFIG_KEY } from '../src/shared.js'
-
 /**
  * 
  * @param {import('next').NextApiRequest} request 
@@ -24,11 +22,7 @@ export default async function handler(
     wallet, projectName
   })
 
-
   const encryptedConfig = encryptObj(key, { wallet });
-  const config = {
-    projectName
-  }
 
   const integrityHash = (await ssri.fromStream(fs.createReadStream('./public/script.js'), {
     algorithms: ['sha384']
@@ -39,13 +33,9 @@ export default async function handler(
   const scriptSrc = new URL('/script.js', selfURL).href;
 
 
-  const script = `<script>
-window['${CONFIG_KEY}'] = {
-  conf: ${JSON.stringify(config, null, 2)}
-  id: '${encryptedConfig}',
-}
-</script>
-<script defer crossorigin="anonymous" src="${scriptSrc}" ${integrity}>`
+  const script = `
+<script crossorigin="anonymous" src="${scriptSrc}" ${integrity}>
+<supp-dapp project="${projectName}" key="${encryptedConfig}" host="${selfURL}"></supp-dapp>`
 
   response.setHeader('content-type', 'text/plain');
   response.send(script);

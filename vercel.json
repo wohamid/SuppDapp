@@ -1,22 +1,25 @@
 {
-    "functions": {
-      "api/generate.js": {
-        "includeFiles": "public/**"
-      },
-      "api/generate2.js": {
-        "includeFiles": "public/**"
-      }
+  "functions": {
+    "api/generate.js": {
+      "includeFiles": "public/**"
     },
-    "headers": [
-        {
-          "source": "/api/(.*)",
-          "headers": [
-            { "key": "Access-Control-Allow-Credentials", "value": "true" },
-            { "key": "Access-Control-Allow-Origin", "value": "*" },
-            { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS,POST" },
-            { "key": "Access-Control-Allow-Headers", "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-Type, Date" }
-          ]
-        }
-      ]
-  }
-  
+    "api/generate2.js": {
+      "includeFiles": "public/**"
+    }
+  },
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/api/(.*)",
+      "headers": {
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,OPTIONS,POST",
+        "Access-Control-Allow-Headers": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-Type, Date"
+      }
+    }
+  ]
+}
