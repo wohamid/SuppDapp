@@ -8,9 +8,7 @@
     response
   ) {
     try {
-        console.log('i am in', request.query);
       const origin = request.query.origin;
-      console.log({ origin });
   
       safeInputStrings({
         origin,

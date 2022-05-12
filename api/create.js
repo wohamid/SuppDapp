@@ -31,38 +31,41 @@ export default async function handler(
   response
 ) {
   try {
-    //   const cookies = new Cookies(request, response, { secure: true })
-    //   const siwe = cookies.get('siwe');
-    //   if (!siwe) {
-    //     response.status(401).send(`No auth`);
-    //     return;
-    // }
-    console.log('body', request.body);
-      
-    const wallet = request.body.wallet;
+      const cookies = new Cookies(request, response, { secure: true })
+      const siwe = cookies.get('siwe');
+      if (!siwe) {
+        response.status(401).send(`No auth`);
+        return;
+    }
+    const wallet = siwe.address;
+    
+    // const wallet = request.body.wallet // for testing
     const projectOrigin = request.body.origin;
     const projectContract = request.body.contract;
-    console.log({ wallet, projectOrigin, projectContract });
 
     safeInputStrings({
-      wallet, projectOrigin, projectContract
+      projectOrigin, projectContract
     })
 
     const contract = new ethers.Contract(projectContract, minimalErc721Abi, provider);
     try {
       const contractOwner = await contract.owner();
-      console.log('contractOwner', contractOwner)
       if (contractOwner !== wallet) {
         response.status(400).send('Invalid contract');
         return;
       }
     } catch(err) {
-      console.log('error getting owner', err)
       response.status(400).send('Invalid contract');
       return;
     }
 
-    // TODO - storage
+    /*
+     * todo - store:
+     - script (maybe store this during generate endpoint?)
+     - contract
+     - owner
+     - verified: false
+    */
 
     response.status(201).send();
     return;

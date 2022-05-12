@@ -28,6 +28,4 @@ export default async function handler(
     } catch (e) {
         response.status(401).send(`Invalid auth`);
     }
-
-
 }
