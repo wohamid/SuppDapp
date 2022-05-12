@@ -1,9 +1,6 @@
 
-import ssri from 'ssri';
-import fs from 'fs';
-import { encryptObj } from '../lib/crypt.js';
 
-import { CONFIG_KEY } from '../src/shared.js'
+import getDb from '../lib/db/ipfs-db.js';
 
 /**
  * 
@@ -17,5 +14,11 @@ export default async function handler(
   const selfURL = `https://${request.headers.host}/`
   const key = Buffer.from(process.env.CIPHER_SECRET, 'hex')
 
-  response.send('test');
+  if (request.method.toLowerCase() === 'get') {
+    const database = await getDb();
+
+    const result = await database.getAllMessages();
+    response.send(result);
+  }
+
 }

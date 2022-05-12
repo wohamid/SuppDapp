@@ -10,3 +10,5 @@ ipfs/
 orbitdb
 
 lib/.DS_Store
+
+.idea/
