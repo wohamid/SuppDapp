@@ -13,16 +13,17 @@ export default async function handler(
 ) {
   const selfURL = `https://${request.headers.host}/`
   const key = Buffer.from(process.env.CIPHER_SECRET, 'hex')
-  const wallet = request.query.wallet
+  const address = request.query.address
   const projectName = request.query.projectName
+  const page = new URL(request.query.page).origin;
 
   console.log(`generating script for ${projectName}`)
 
   safeInputStrings({
-    wallet, projectName
+    address, projectName, page
   })
 
-  const encryptedConfig = encryptObj(key, { wallet });
+  const encryptedConfig = encryptObj(key, { address: address, page });
 
   const integrityHash = (await ssri.fromStream(fs.createReadStream('./public/script.js'), {
     algorithms: ['sha384']
@@ -44,6 +45,9 @@ export default async function handler(
 
 function safeInputStrings(inputs) {
   Object.entries(inputs).map(([k, v]) => {
+    if (!v) {
+      throw Error(`Expected param: '${k}'`)
+    }
     if (v.match(/['"<>]/)) {
       throw Error(`Please avoid using '"<> characters in '${k}'`)
     }

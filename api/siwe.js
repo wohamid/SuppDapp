@@ -1,13 +1,13 @@
 import { generateNonce, SiweMessage } from 'siwe';
 import Cookies from 'cookies'
 import { encrypt, decrypt, encryptObj } from '../lib/crypt.js';
-
+import { allowCors } from '../lib/corsHelper.js';
 /**
  * 
  * @param {import('next').NextApiRequest} request 
  * @param {import('next').NextApiResponse} response 
  */
-export default async function handler(
+export default allowCors(async function handler(
     request,
     response
 ) {
@@ -19,7 +19,7 @@ export default async function handler(
         const nonce = generateNonce();
         // nonce could go to a Redis db and get destroyed after use for improved security, but this is the next best thing
         cookies.set('n', encrypt(key, nonce), {
-            sameSite: 'lax',
+            sameSite: 'none',
             maxAge: 60 * 1000
         });
         response.setHeader('Content-Type', 'text/plain');
@@ -42,7 +42,7 @@ export default async function handler(
                 return;
             }
             cookies.set('siwe', encryptObj(key, fields), {
-                sameSite: 'lax',
+                sameSite: 'none',
                 expires: new Date(fields.expirationTime),
             });
             cookies.set('n', '', {
@@ -61,4 +61,4 @@ export default async function handler(
         }
     }
 
-}
+})
