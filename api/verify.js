@@ -1,5 +1,6 @@
 import Cookies from 'cookies'
 import fetch from 'node-fetch';
+import { parseCookie } from '../lib/siwe.js';
 
 /**
  * 
@@ -11,14 +12,13 @@ export default async function handler(
   response
 ) {
   try {
-      const cookies = new Cookies(request, response, { secure: true })
-      const siwe = cookies.get('siwe');
-      if (!siwe) {
-        response.status(401).send(`No auth`);
-        return;
-    }
-    console.log({ siwe })
-    const wallet = siwe.address;
+    const cookies = new Cookies(request, response, { secure: true })
+    const siwe = parseCookie(cookies);
+    if (!siwe) {
+      response.status(401).send(`No auth`);
+      return;
+  }
+  const wallet = siwe.address;
 
     // const wallet = request.query.wallet; // for testing
     const contract = request.query.contract;

@@ -1,5 +1,6 @@
 import Cookies from 'cookies'
 import ethers from 'ethers';
+import { parseCookie } from '../lib/siwe.js';
 
 const provider = ethers.getDefaultProvider('homestead', {
   infura: process.env.INFURA_PROJECT_ID
@@ -32,7 +33,8 @@ export default async function handler(
 ) {
   try {
       const cookies = new Cookies(request, response, { secure: true })
-      const siwe = cookies.get('siwe');
+      const siwe = parseCookie(cookies);
+      console.log('siwe', siwe);
       if (!siwe) {
         response.status(401).send(`No auth`);
         return;
