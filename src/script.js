@@ -47,12 +47,12 @@ class SuppDapp extends HTMLElement {
       dev: true,
       data: {
         config,
-        currentTicket: 1
       },
       actions: {
         async toggle(store) {
           if (store.isAuthorized) {
             store.isOpen = !store.isOpen;
+            store.currentTicket = null;
           } else {
             try {
               if (await getAuth()) {
@@ -63,6 +63,9 @@ class SuppDapp extends HTMLElement {
               store.error = e.message
             }
           }
+        },
+        setTicket(store, id) {
+          store.currentTicket = id;
         },
         async connectSnap(store) {
           connectToSnap()
@@ -106,7 +109,7 @@ class SuppDapp extends HTMLElement {
         },
         IDLE(store) {
           store.error = null
-          if (store.isOpen) {
+          if (store.isOpen && store.currentTicket) {
             store.actions.load();
           }
         }
@@ -146,7 +149,7 @@ class SuppDapp extends HTMLElement {
           }
         },
         function renderMessages($, store) {
-          if (store.isOpen) {
+          if (store.isOpen && store.currentTicket) {
             $('.supp-panel').style.display = "block";
             $('.supp-messages').innerHTML = '';
             if (store.tickets) {
@@ -160,6 +163,23 @@ class SuppDapp extends HTMLElement {
             }
           } else {
             $('.supp-panel').style.display = "none";
+          }
+        },
+        function renderTickets($, store) {
+          if (store.isOpen && !store.currentTicket) {
+            $('.supp-tix').style.display = "block";
+            $('.tickets').innerHTML = '';
+            if (store.tickets) {
+              $('.tickets').append(...Object.entries(store.tickets).map(([id,{ title }]) => {
+                const t = document.createElement('span')
+                t.innerText = title;
+                t.classList.add('thing', 'tic')
+                t.addEventListener('click', ()=>store.actions.setTicket(id))
+                return t;
+              }))
+            }
+          } else {
+            $('.supp-tix').style.display = "none";
           }
         },
         function renderSendingState($, store) {
