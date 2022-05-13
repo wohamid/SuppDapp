@@ -103,6 +103,7 @@ class SuppDapp extends HTMLElement {
           }
         },
         IDLE(store) {
+          store.error = null
           if (store.isOpen) {
             store.actions.load();
           }
@@ -142,13 +143,15 @@ class SuppDapp extends HTMLElement {
           if (store.isOpen) {
             $('.supp-panel').style.display = "block";
             $('.supp-messages').innerHTML = '';
-            $('.supp-messages').append(...store.messages.map(({ from, text }) => {
-              const m = document.createElement('span')
-              m.innerText = text;
-              const who = from === store.address ? 'from-me' : 'from-them';
-              m.classList.add('msg', 'thing', who)
-              return m;
-            }))
+            if (store.messages) {
+              $('.supp-messages').append(...store.messages.map(({ from, text }) => {
+                const m = document.createElement('span')
+                m.innerText = text;
+                const who = from === store.address ? 'from-me' : 'from-them';
+                m.classList.add('msg', 'thing', who)
+                return m;
+              }))
+            }
           } else {
             $('.supp-panel').style.display = "none";
           }
