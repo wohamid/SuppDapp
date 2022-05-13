@@ -1,7 +1,7 @@
 import Cookies from 'cookies'
 import fetch from 'node-fetch';
 import { parseCookie } from '../lib/siwe.js';
-
+import { createKey } from '../lib/scriptHelper.js';
 /**
  * 
  * @param {import('next').NextApiRequest} request 
@@ -29,10 +29,14 @@ export default async function handler(
       return;
     }
 
-  const r = await fetch(projectInfo.origin);
-  const body = await r.text(); // might be better to do this as a stream if this app were real
+    const siteUrl = projectInfo.origin;
 
-  if (body.includes(projectInfo.script)) {
+    const scriptKey = createKey(contract, siteUrl);
+
+    const r = await fetch(siteUrl);
+    const body = await r.text(); // might be better to do this as a stream if this app were real
+
+  if (body.includes(scriptKey)) {
     await setVerified(contract);
     response.status(200).send();
   } else {
@@ -53,7 +57,6 @@ async function getProjectInfo(contract) {
     owner: 'fiewfiow',
     contract,
     origin: 'https://www.google.com',
-    script: `><input name="biw" type="hidden"><input name="bih" type="hidden"><di`
   }
 }
 

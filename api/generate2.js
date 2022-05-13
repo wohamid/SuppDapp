@@ -1,6 +1,6 @@
 import ssri from 'ssri';
 import fs from 'fs';
-import { encryptObj } from '../lib/crypt.js';
+import { createKey } from '../lib/scriptHelper.js';
 
 /**
  * 
@@ -12,7 +12,6 @@ export default async function handler(
   response
 ) {
   const selfURL = `https://${request.headers.host}/`
-  const key = Buffer.from(process.env.CIPHER_SECRET, 'hex')
   const address = request.query.address
   const projectName = request.query.projectName
   const page = new URL(request.query.page).origin;
@@ -23,7 +22,7 @@ export default async function handler(
     address, projectName, page
   })
 
-  const encryptedConfig = encryptObj(key, { address: address, page });
+  const encryptedConfig = createKey(address, page)
 
   const integrityHash = (await ssri.fromStream(fs.createReadStream('./public/script.js'), {
     algorithms: ['sha384']
