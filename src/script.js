@@ -130,14 +130,14 @@ class SuppDapp extends HTMLElement {
         },
         function renderBtn($, store) {
           if (!store.isAuthorized) {
-            $('.supp-btn>i').style.display = 'none';
+            $('.supp-btn>b').style.display = 'none';
             return
           }
           if (store.messages) {
-            $('.supp-btn>i').style.display = 'block';
-            $('.supp-btn>i').innerText = store.messages.length;
+            $('.supp-btn>b').style.display = 'block';
+            $('.supp-btn>b').innerText = store.messages.length;
           } else {
-            $('.supp-btn>i').style.display = 'none';
+            $('.supp-btn>b').style.display = 'none';
           }
         },
         function renderMessages($, store) {

@@ -1,6 +1,6 @@
 .supp-corner {
   --main-cl: #bfc;
-  --indicator-cl: #8fa;
+  --indicator-cl: #7d4;
   --bg: #fff;
   --me-cl: rgb(226, 255, 233);
   --them-cl: #efb;
@@ -19,6 +19,7 @@
   gap: var(--gap);
   width: 300px;
   font-family: var(--font);
+  font-size: 14px;
 }
 
 .thing {
@@ -32,15 +33,13 @@
   align-self: flex-end;
   background-size: contain;
 }
-.supp-btn i {
+.supp-btn b {
   background-color: var(--indicator-cl);
-  width: 1em;
   height: 1em;
   border-radius: 50%;
   text-align: center;
-  padding: 3px;
+  padding: 3px 7px;
   float: right;
-  font-weight: bold;
   color: #fff;
 }
 
