@@ -36,7 +36,7 @@ export default async function handler(
 
 
     const script = `
-<script crossorigin="anonymous" src="${scriptSrc}" ${integrity}>
+<script crossorigin="anonymous" src="${scriptSrc}" ${integrity}></script>
 <supp-dapp project="${projectName}" key="${encryptedConfig}" host="${selfURL}"></supp-dapp>`
 
     response.setHeader('content-type', 'text/plain');
