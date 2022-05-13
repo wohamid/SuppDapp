@@ -34,7 +34,6 @@ export default async function handler(
   try {
       const cookies = new Cookies(request, response, { secure: true })
       const siwe = parseCookie(cookies);
-      console.log('siwe', siwe);
       if (!siwe) {
         response.status(401).send(`No auth`);
         return;
