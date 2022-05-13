@@ -19,7 +19,7 @@
   },
   "scripts": {
     "start": "npm run script:build& npm run localdev",
-    "build": "patch-package && npm run script:build",
+    "build": "patch-package && npm run script:build && next build",
     "localdev": "vercel dev",
     "script:watch": "parcel watch",
     "script:build": "parcel build",
