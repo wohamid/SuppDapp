@@ -26,11 +26,11 @@ export default async function handler(
 
     const encryptedConfig = encryptObj(key, { address: address, page });
 
-    const integrityHash = (await ssri.fromStream(fs.createReadStream('./public/script.js'), {
-      algorithms: ['sha384']
-    })).toString()
-    const integrity = `integrity="${integrityHash}"`;
-    // const integrity = ``;
+    // const integrityHash = (await ssri.fromStream(fs.createReadStream('./public/script.js'), {
+    //   algorithms: ['sha384']
+    // })).toString()
+    // const integrity = `integrity="${integrityHash}"`;
+    const integrity = ``;
 
     const scriptSrc = new URL('/script.js', selfURL).href;
 
