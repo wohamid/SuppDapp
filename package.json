@@ -41,6 +41,7 @@
     "cookies": "^0.8.0",
     "ethers": "^5.5.0",
     "jsonwebtoken": "^8.5.1",
+    "node-fetch": "^3.2.4",
     "siwe": "1.1.6",
     "ssri": "^9.0.0"
   }

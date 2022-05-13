@@ -22,7 +22,7 @@ class SuppDapp extends HTMLElement {
     this.suppBtn = btn;
     wrapper.append(btn);
     shadow.append(style, wrapper);
-
+    this.snapId = `local:http://localhost:8080/`;
   }
   connectedCallback() {
     this.config = {
@@ -41,6 +41,7 @@ class SuppDapp extends HTMLElement {
       }
 
       await this.ensureSigner()
+      await this.connectToSnap();
       if (!this.isAuthorized) {
         this.signInWithWallet()
       } else {
@@ -114,6 +115,28 @@ class SuppDapp extends HTMLElement {
       nonce: await res.text()
     });
     return message.prepareMessage();
+  }
+  async connectToSnap() {
+
+    await window.ethereum.request({
+      method: 'wallet_enable',
+      params: [{
+        wallet_snap: { [this.snapId]: {} },
+      }]
+    });
+    const verification = await window.ethereum.request({
+      method: 'wallet_invokeSnap',
+      params: [this.snapId, {
+        method: 'hello'
+      }]
+    })
+    if (verification) {
+      if (verification.valid) {
+        console.log(`This page has been verified by SuppDapp to provide support for contract ${verification.contract}`);
+      } else {
+        console.log('Could not confirm that this page has been verified by SuppDapp');
+      }
+    }
   }
 
 }
