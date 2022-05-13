@@ -51,7 +51,14 @@ class SuppDapp extends HTMLElement {
 
   }
   showFreshCollapsedState() {
-    fetch(`${this.config.host}/api/ping`).then(res => {
+    fetch(`${this.config.host}/api/ping`, {
+      mode: 'cors',
+      cache: 'no-cache',
+      credentials: 'include',
+      headers: {
+        'x-project-key': this.config.key
+      },
+    }).then(res => {
       if (res.status === 200) {
         this.isAuthorized = true
         return res.json()
