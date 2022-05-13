@@ -3,10 +3,13 @@ export function framework({ reactions, actions, data, dev = false, root = docume
     let lastUpdate = Date.now();
     const store = new Proxy(data, {
         set(d, k, v) {
-            d[k] = v;
-            lastUpdate = Date.now();
-            dev && console.trace('SET', k, v);
-            return updateSoon = true;
+            if(d[k] !== v) {
+                dev && console.trace('SET', k, v);
+                d[k] = v;
+                lastUpdate = Date.now();
+                updateSoon = true;
+            }
+            return true
         }
     })
     try {
