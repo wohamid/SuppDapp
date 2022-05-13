@@ -1,6 +1,7 @@
 import { generateNonce, SiweMessage } from 'siwe';
 import Cookies from 'cookies'
 import { encrypt, decrypt, encryptObj } from '../lib/crypt.js';
+import { key } from '../lib/siwe.js';
 import { allowCors } from '../lib/corsHelper.js';
 /**
  * 
@@ -11,7 +12,6 @@ export default allowCors(async function handler(
     request,
     response
 ) {
-    const key = Buffer.from(process.env.CIPHER_SECRET, 'hex')
     const cookies = new Cookies(request, response, { secure: true })
     const selfURL = `https://${request.headers.host}/`
     console.log(request.method, selfURL)
@@ -36,6 +36,7 @@ export default allowCors(async function handler(
 
             let message = new SiweMessage(body.message);
             const fields = await message.validate(body.signature);
+            console.log('fields', fields);
             console.log('ms', message, nonce)
             if (fields.nonce !== nonce) {
                 response.status(422).send(`Invalid nonce.`);

@@ -1,7 +1,7 @@
 import Cookies from 'cookies'
 import { decryptObj } from '../lib/crypt.js';
 import { allowCors } from '../lib/corsHelper.js';
-import { getMessagesBetween, appendMessage } from '../lib/persistence.js';
+import { getTicketsBetween, appendMessage } from '../lib/persistence.js';
 
 
 /**
@@ -39,17 +39,17 @@ export default allowCors(async function handler(
     }
     console.log(project, info, request.body)
 
-    let msg;
+    let tickets;
     // use address from info and wallet from project to fetch the messages between the two
     if(request.body) {
-        msg = await appendMessage(project.address, info.address, info.address, request.body.message)
+        tickets = await appendMessage(project.address, info.address, info.address, request.body.ticket, request.body.message)
     } else {
-        msg = await getMessagesBetween(project.address, info.address)
+        tickets = await getTicketsBetween(project.address, info.address)
     }
 
     response.json({
         address: info.address,
-        messages: msg || null
+        tickets: tickets || null
     })
 
 })
