@@ -74,7 +74,7 @@ input:focus {
 
 .supp-write,
 .supp-new {
-  padding: var(--gap) 0;
+  padding: 10px 0;
   display: flex;
   gap: 5px;
   justify-content: space-between;
@@ -113,4 +113,8 @@ input:focus {
 .tic:before {
   content: "ticket:";
   font-size: 0.8em;
+}
+.tic:after {
+  content: attr(title);
+  float: right;
 }

@@ -107,6 +107,25 @@ class SuppDapp extends HTMLElement {
             })
           }
         },
+        newTic(store, title) {
+          if(title) {
+            fetcher(`/api/tic`, {
+              method: 'POST',
+              headers: {
+                'content-type': 'application/json'
+              },
+              body: JSON.stringify({ title: `${title}` })
+            }).then((data) => {
+              store.isSending = false;
+              if (data) {
+                store.tickets = data.tickets
+              }
+            }, (e) => {
+              store.isSending = false;
+              store.error = e.message
+            })
+          }
+        },
         IDLE(store) {
           store.error = null
           if (store.isOpen && store.currentTicket) {
@@ -116,7 +135,7 @@ class SuppDapp extends HTMLElement {
       },
       reactions: [
         function init($, store) {
-          const { load, send, toggle } = store.actions;
+          const { load, send, toggle, newTic } = store.actions;
           $('.supp-btn').style.backgroundImage = `url('${new URL('bunny_whisper.png',store.config.host).href}')`;
 
           $('.supp-btn').addEventListener('click', async (e) => {
@@ -132,6 +151,10 @@ class SuppDapp extends HTMLElement {
           $('.supp-send').addEventListener('click', () => {
             send($('.supp-input').value)
             $('.supp-input').value = '';
+          })
+          $('.supp-new-btn').addEventListener('click', () => {
+            newTic($('.supp-title').value)
+            $('.supp-title').value = '';
           })
           load()
           return this.ONCE // run this reaction only once at the beginning
@@ -170,9 +193,10 @@ class SuppDapp extends HTMLElement {
             $('.supp-tix').style.display = "block";
             $('.tickets').innerHTML = '';
             if (store.tickets) {
-              $('.tickets').append(...Object.entries(store.tickets).map(([id,{ title }]) => {
+              $('.tickets').append(...Object.entries(store.tickets).map(([id,{ title, messages }]) => {
                 const t = document.createElement('span')
                 t.innerText = title;
+                t.title = messages.length;
                 t.classList.add('thing', 'tic')
                 t.addEventListener('click', ()=>store.actions.setTicket(id))
                 return t;
