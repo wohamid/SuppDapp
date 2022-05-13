@@ -1,10 +1,12 @@
 .supp-corner {
   --main-cl: #bfc;
+  --indicator-cl: #8fa;
   --bg: #fff;
   --me-cl: rgb(226, 255, 233);
   --them-cl: #efb;
   --gap: 7px;
   --shadow-cl: #888; /* should look ok on dark and light backgrounds ;) */
+  --font: sans-serif;
 }
 
 .supp-corner {
@@ -16,25 +18,34 @@
   justify-content: flex-end;
   gap: var(--gap);
   width: 300px;
+  font-family: var(--font);
 }
 
 .thing {
-    box-shadow: 0 0 10px var(--shadow-cl);
-    border-radius: 5px;
+  box-shadow: 0 0 10px var(--shadow-cl);
+  border-radius: 5px;
 }
 
 .supp-btn {
   width: 64px;
   height: 64px;
-  border-radius: 50%;
-  background-color: var(--main-cl);
-  text-align: center;
-  line-height: 60px;
-  vertical-align: middle;
   align-self: flex-end;
+  background-size: contain;
+}
+.supp-btn i {
+  background-color: var(--indicator-cl);
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  text-align: center;
+  padding: 3px;
+  float: right;
+  font-weight: bold;
+  color: #fff;
 }
 
-.supp-btn, button {
+.supp-btn,
+button {
   cursor: pointer;
 }
 
@@ -43,12 +54,12 @@ button {
   padding: 5px;
   border: 2px solid var(--main-cl);
   background-color: var(--bg);
+  font-family: var(--font);
 }
 
 input:focus {
-    outline: none;
+  outline: none;
 }
-
 
 .errors {
   color: red;
@@ -75,12 +86,14 @@ input:focus {
   flex-direction: column;
   gap: var(--gap);
 }
-.msg, .supp-write input{
+.msg,
+.supp-write input {
   padding: 5px;
   width: 80%;
   border-radius: 5px;
 }
-.msg.from-me, .supp-write input {
+.msg.from-me,
+.supp-write input {
   align-self: flex-start;
   background-color: var(--me-cl);
 }

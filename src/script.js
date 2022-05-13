@@ -21,10 +21,6 @@ class SuppDapp extends HTMLElement {
     const wrapper = document.createElement('div')
     wrapper.classList.add('supp-corner');
     this.wrapper = wrapper
-    // const btn = document.createElement('div')
-    // btn.classList.add('supp-btn');
-    // this.suppBtn = btn;
-    // wrapper.append(btn);
     wrapper.innerHTML = scaffoldingHTML;
     shadow.append(style, wrapper);
 
@@ -113,6 +109,7 @@ class SuppDapp extends HTMLElement {
       reactions: [
         function init($, store) {
           const { load, send, toggle } = store.actions;
+          $('.supp-btn').style.backgroundImage = `url('${new URL('bunny_whisper.png',store.config.host).href}')`;
 
           $('.supp-btn').addEventListener('click', async (e) => {
             if (!window.ethereum) {
@@ -133,10 +130,14 @@ class SuppDapp extends HTMLElement {
         },
         function renderBtn($, store) {
           if (!store.isAuthorized) {
-            return $('.supp-btn').innerText = 'Sign in';
+            $('.supp-btn>i').style.display = 'none';
+            return
           }
           if (store.messages) {
-            $('.supp-btn').innerText = store.messages ? store.messages.length : '';
+            $('.supp-btn>i').style.display = 'block';
+            $('.supp-btn>i').innerText = store.messages.length;
+          } else {
+            $('.supp-btn>i').style.display = 'none';
           }
         },
         function renderMessages($, store) {
