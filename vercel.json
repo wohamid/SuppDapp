@@ -1,10 +1,10 @@
 {
   "functions": {
     "api/generate.js": {
-      "includeFiles": "public/**"
+      "includeFiles": "./public/*"
     },
     "api/generate2.js": {
-      "includeFiles": "public/**"
+      "includeFiles": "./public/*"
     }
   },
   "routes": [
