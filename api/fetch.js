@@ -1,9 +1,11 @@
+import { allowCors } from '../lib/corsHelper.js';
+
 /**
  * 
  * @param {import('next').NextApiRequest} request 
  * @param {import('next').NextApiResponse} response 
  */
- export default async function handler(
+ export default allowCors(async function handler(
     request,
     response
   ) {
@@ -28,7 +30,7 @@
     } catch(err) {
       response.status(500).send();
     }
-  }
+  });
   
   function safeInputStrings(inputs){
     Object.entries(inputs).map(([k,v]) => {
