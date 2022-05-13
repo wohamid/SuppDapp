@@ -1,17 +1,91 @@
+.supp-corner {
+  --main-cl: #bfc;
+  --bg: #fff;
+  --me-cl: rgb(226, 255, 233);
+  --them-cl: #efb;
+  --gap: 7px;
+  --shadow-cl: #888; /* should look ok on dark and light backgrounds ;) */
+}
+
+.supp-corner {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--gap);
+  width: 300px;
+}
+
+.thing {
+    box-shadow: 0 0 10px var(--shadow-cl);
+    border-radius: 5px;
+}
+
 .supp-btn {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background-color: greenyellow;
-    box-shadow: 0 0 10px #000;
-    text-align: center;
-    line-height: 60px;
-    vertical-align: middle;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: var(--main-cl);
+  text-align: center;
+  line-height: 60px;
+  vertical-align: middle;
+  align-self: flex-end;
+}
+
+.supp-btn, button {
+  cursor: pointer;
+}
+
+input,
+button {
+  padding: 5px;
+  border: 2px solid var(--main-cl);
+  background-color: var(--bg);
+}
+
+input:focus {
+    outline: none;
 }
 
 
-.supp-corner {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
+.errors {
+  color: red;
+  background-color: var(--bg);
+  text-align: right;
+}
+
+.supp-panel {
+  display: none;
+  padding: 10px;
+}
+
+.supp-write {
+  padding: var(--gap) 0;
+  display: flex;
+  gap: 5px;
+  justify-content: space-between;
+  background-color: var(--bg);
+  border-radius: 5px;
+}
+
+.supp-messages {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+.msg, .supp-write input{
+  padding: 5px;
+  width: 80%;
+  border-radius: 5px;
+}
+.msg.from-me, .supp-write input {
+  align-self: flex-start;
+  background-color: var(--me-cl);
+}
+.msg.from-them {
+  align-self: flex-end;
+  text-align: right;
+  background-color: var(--them-cl);
 }

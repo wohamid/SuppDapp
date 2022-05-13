@@ -1,10 +1,14 @@
 import cssText from 'bundle-text:./script.css';
-
+import scaffoldingHTML from 'bundle-text:./scriptscaffolding.html';
 import { ethers } from 'ethers';
 import { SiweMessage } from 'siwe';
 
+import { framework } from './framework';
+
 const domain = window.location.host;
 const origin = window.location.origin;
+
+
 
 class SuppDapp extends HTMLElement {
   constructor() {
@@ -17,60 +21,178 @@ class SuppDapp extends HTMLElement {
     const wrapper = document.createElement('div')
     wrapper.classList.add('supp-corner');
     this.wrapper = wrapper
-    const btn = document.createElement('div')
-    btn.classList.add('supp-btn');
-    this.suppBtn = btn;
-    wrapper.append(btn);
+    // const btn = document.createElement('div')
+    // btn.classList.add('supp-btn');
+    // this.suppBtn = btn;
+    // wrapper.append(btn);
+    wrapper.innerHTML = scaffoldingHTML;
     shadow.append(style, wrapper);
 
   }
+  // executed when tag is used in a document, first moment to read attributes
   connectedCallback() {
     this.config = {
       project: this.getAttribute('project'),
       key: this.getAttribute('key'),
       host: this.getAttribute('host'),
     }
-    console.log(this.config)
-    this.showFreshCollapsedState()
-    this.suppBtn.addEventListener('click', async (e) => {
-      if (!window.ethereum) {
-        // tell them to install metamask
-        alert('You need a wallet in your browser');
-        window.open('https://metamask.io/');
-        return;
-      }
-
-      await this.ensureSigner()
-      if (!this.isAuthorized) {
-        this.signInWithWallet()
-      } else {
-
-        alert('do stuff')
-      }
+    this.app({
+      config: this.config,
+      wrapper: this.wrapper,
+      getAuth: this.getAuth.bind(this),
+      fetcher: this.fetcher.bind(this)
     })
-
+    console.log(this.config)
   }
-  showFreshCollapsedState() {
-    fetch(`${this.config.host}/api/ping`, {
+  app({ wrapper, getAuth, config, fetcher }) {
+    this.framework = framework({
+      root: wrapper,
+      dev: true,
+      data: {
+        config
+      },
+      actions: {
+        async toggle(store) {
+          if (store.isAuthorized) {
+            store.isOpen = !store.isOpen;
+          } else {
+            try {
+              if (await getAuth()) {
+                store.actions.load();
+                store.isOpen = !store.isOpen;
+              }
+            } catch (e) {
+              store.error = e.message
+            }
+          }
+        },
+        load(store) {
+          fetcher(`/api/msg`).then((data) => {
+            if (data) {
+              store.isAuthorized = true
+              store.messages = data.messages
+              store.address = data.address
+            }
+          }, (e) => {
+            if (e.code === 401) {
+              return store.isAuthorized = false;
+            }
+            store.error = e.message
+          })
+        },
+        send(store, text) {
+          if (!store.isSending) {
+            store.isSending = true;
+            //optimistic update
+            store.messages.push({ from: store.address, text })
+            fetcher(`/api/msg`, {
+              method: 'POST',
+              headers: {
+                'content-type': 'application/json'
+              },
+              body: JSON.stringify({ message: `${text}` })
+            }).then((data) => {
+              store.isSending = false;
+              if (data) {
+                store.messages = data.messages
+              }
+            }, (e) => {
+              store.isSending = false;
+              store.error = e.message
+            })
+          }
+        },
+        IDLE(store) {
+          if (store.isOpen) {
+            store.actions.load();
+          }
+        }
+
+      },
+      reactions: [
+        function init($, store) {
+          const { load, send, toggle } = store.actions;
+
+          $('.supp-btn').addEventListener('click', async (e) => {
+            if (!window.ethereum) {
+              // tell them to install metamask
+              alert('You need a wallet in your browser');
+              window.open('https://metamask.io/');
+              return;
+            }
+            toggle()
+          })
+
+          $('.supp-send').addEventListener('click', () => {
+            send($('.supp-input').value)
+            $('.supp-input').value = '';
+          })
+          load()
+          return this.ONCE // run this reaction only once at the beginning
+        },
+        function renderBtn($, store) {
+          if (!store.isAuthorized) {
+            return $('.supp-btn').innerText = 'Sign in';
+          }
+          if (store.messages) {
+            $('.supp-btn').innerText = store.messages ? store.messages.length : '';
+          }
+        },
+        function renderMessages($, store) {
+          if (store.isOpen) {
+            $('.supp-panel').style.display = "block";
+            $('.supp-messages').innerHTML = '';
+            $('.supp-messages').append(...store.messages.map(({ from, text }) => {
+              const m = document.createElement('span')
+              m.innerText = text;
+              const who = from === store.address ? 'from-me' : 'from-them';
+              m.classList.add('msg', 'thing', who)
+              return m;
+            }))
+          } else {
+            $('.supp-panel').style.display = "none";
+          }
+        },
+        function renderSendingState($, store) {
+          $('.supp-send').disabled = store.isSending;
+        },
+        function renderError($, store) {
+          if (store.error) {
+            $('.errors').innerText = store.error
+          }
+        }
+      ]
+    })
+  }
+  async fetcher(path, options = {}) {
+    return fetch(new URL(path, this.config.host).href, {
       mode: 'cors',
       cache: 'no-cache',
       credentials: 'include',
+      ...options,
       headers: {
-        'x-project-key': this.config.key
+        'x-project-key': this.config.key,
+        ...(options.headers || {})
       },
     }).then(res => {
       if (res.status === 200) {
-        this.isAuthorized = true
         return res.json()
       }
-    }).then((data) => {
-      if (!data) {
-        this.suppBtn.innerText = 'sign in'
-        return;
-      }
-      this.suppBtn.innerText = data.messages
+      const err = Error(`Error ${res.status} from ${path}`);
+      err.code = res.status;
+      throw err
     })
   }
+  async getAuth() {
+    await this.ensureSigner()
+    if (!this.isAuthorized) {
+      return this.signInWithWallet()
+    } else {
+      return true
+    }
+  }
+
+  // AUTH helper functions
   async ensureSigner() {
     if (!this.signer) {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -95,10 +217,9 @@ class SuppDapp extends HTMLElement {
       credentials: 'include'
     });
     if (res.status === 200) {
-      this.showFreshCollapsedState()
+      return true;
     }
-    console.log(await res.text());
-
+    throw Error(await res.text());
   }
   async createSiweMessage(address, statement) {
     const res = await fetch(`${this.config.host}/api/siwe`, {
