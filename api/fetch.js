@@ -1,5 +1,5 @@
 import { allowCors } from '../lib/corsHelper.js';
-
+import { getProjectByOrigin } from '../lib/persistence.js';
 /**
  * 
  * @param {import('next').NextApiRequest} request 
@@ -16,7 +16,14 @@ import { allowCors } from '../lib/corsHelper.js';
         origin,
       })
 
-      const contract = await getContract(origin);
+      const project = await getProjectByOrigin(origin);
+
+      if (!project) {
+        response.status(404).send();
+        return;
+     }
+
+     const { contract } = project;
       
       if (!contract) {
          response.status(404).send();
@@ -40,7 +47,3 @@ import { allowCors } from '../lib/corsHelper.js';
     })
   }
 
-  async function getContract(origin) {
-      // TODO - read from storage
-      return '0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d'
-  }

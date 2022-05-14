@@ -18,8 +18,8 @@
     }
   },
   "scripts": {
-    "dev": "parcel serve",
     "start": "npm run script:build& npm run localdev",
+    "dev": "parcel serve",
     "build": "patch-package && npm run script:build && next build",
     "localdev": "vercel dev",
     "script:watch": "parcel watch",
@@ -31,22 +31,29 @@
   "license": "ISC",
   "devDependencies": {
     "@parcel/transformer-inline-string": "^2.5.0",
+    "assert": "^2.0.0",
     "buffer": "^6.0.3",
     "eslint": "^8.15.0",
     "eslint-plugin-react": "^7.29.4",
+    "crypto-browserify": "^3.12.0",
     "events": "^3.3.0",
     "parcel": "^2.5.0",
     "patch-package": "^6.4.7",
     "postcss": "^8.4.13",
+    "tailwindcss": "^3.0.24",
     "process": "^0.11.10",
-    "tailwindcss": "^3.0.24"
+    "querystring-es3": "^0.2.1",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "daisyui": "^2.14.3",
+    "next": "^12.1.6",
+    "url": "^0.11.0"
   },
   "dependencies": {
     "cookies": "^0.8.0",
-    "daisyui": "^2.14.3",
     "ethers": "^5.5.0",
+    "ioredis": "^5.0.4",
     "jsonwebtoken": "^8.5.1",
-    "next": "^12.1.6",
     "node-fetch": "^3.2.4",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
