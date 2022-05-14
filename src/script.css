@@ -1,5 +1,6 @@
 .supp-corner {
   --main-cl: #bfc;
+  --text-cl: #000;
   --indicator-cl: #7d4;
   --bg: #fff;
   --me-cl: rgb(226, 255, 233);
@@ -20,6 +21,10 @@
   width: 300px;
   font-family: var(--font);
   font-size: 14px;
+  /* reset inherited body styles */
+  font-weight: normal;
+  color: var(--text-cl);
+  line-height: 1em;
 }
 
 .thing {
@@ -73,6 +78,7 @@ button {
   border: 2px solid var(--main-cl);
   background-color: var(--bg);
   font-family: var(--font);
+  color: var(--text-cl);
 }
 
 input:focus {
