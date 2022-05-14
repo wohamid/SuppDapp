@@ -1,17 +1,120 @@
-.supp-btn {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background-color: greenyellow;
-    box-shadow: 0 0 10px #000;
-    text-align: center;
-    line-height: 60px;
-    vertical-align: middle;
+.supp-corner {
+  --main-cl: #bfc;
+  --indicator-cl: #7d4;
+  --bg: #fff;
+  --me-cl: rgb(226, 255, 233);
+  --them-cl: #efb;
+  --gap: 7px;
+  --shadow-cl: #888; /* should look ok on dark and light backgrounds ;) */
+  --font: sans-serif;
 }
 
-
 .supp-corner {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--gap);
+  width: 300px;
+  font-family: var(--font);
+  font-size: 14px;
+}
+
+.thing {
+  box-shadow: 0 0 10px var(--shadow-cl);
+  border-radius: 5px;
+}
+
+.supp-btn {
+  width: 64px;
+  height: 64px;
+  align-self: flex-end;
+  background-size: contain;
+}
+.supp-btn b {
+  background-color: var(--indicator-cl);
+  height: 1em;
+  border-radius: 50%;
+  text-align: center;
+  padding: 3px 7px;
+  float: right;
+  color: #fff;
+}
+
+.supp-btn,
+button {
+  cursor: pointer;
+}
+
+input,
+button {
+  padding: 5px;
+  border: 2px solid var(--main-cl);
+  background-color: var(--bg);
+  font-family: var(--font);
+}
+
+input:focus {
+  outline: none;
+}
+
+.errors {
+  color: red;
+  background-color: var(--bg);
+  text-align: right;
+}
+
+.supp-panel,
+.supp-tix {
+  display: none;
+  padding: 10px;
+}
+
+.supp-write,
+.supp-new {
+  padding: 10px 0;
+  display: flex;
+  gap: 5px;
+  justify-content: space-between;
+  background-color: var(--bg);
+  border-radius: 5px;
+}
+
+.supp-messages,
+.tickets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+.msg,
+.supp-write input {
+  padding: 5px;
+  width: 80%;
+  border-radius: 5px;
+}
+.msg.from-me,
+.supp-write input {
+  align-self: flex-start;
+  background-color: var(--me-cl);
+}
+.msg.from-them {
+  align-self: flex-end;
+  text-align: right;
+  background-color: var(--them-cl);
+}
+
+.tic {
+  cursor: pointer;
+  background-color: var(--main-cl);
+  padding: 5px;
+}
+.tic:before {
+  content: "ticket:";
+  font-size: 0.8em;
+}
+.tic:after {
+  content: attr(title);
+  float: right;
 }
