@@ -6,7 +6,7 @@ import Modal from "../components/Modal"
 const App = () => {
   const [wallet, setWallet] = React.useState();
   const [modalVisibility, setModalVisibility] = React.useState(false);
-  const [isSignedUp, setIsSignedUp] = React.useState(false);
+  const [isSignedUp, setIsSignedUp] = React.useState(true);
 
   const handleOnConnectWalletClick = async () => {
     const { ethereum } = window;
@@ -16,7 +16,7 @@ const App = () => {
 
     console.log(mmWallet)
 
-    // setWallet(mmWallet);
+    setWallet(mmWallet);
   };
   const handleRowClick = () => {
     setModalVisibility(!modalVisibility);
