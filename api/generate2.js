@@ -19,27 +19,31 @@ export default async function handler(
 
   console.log(`generating script for ${projectName}`)
 
-  safeInputStrings({
-    address, projectName, page
-  })
+  try {
+    safeInputStrings({
+      address, projectName, page
+    })
 
-  const encryptedConfig = encryptObj(key, { address: address, page });
+    const encryptedConfig = encryptObj(key, { address: address, page });
 
-  const integrityHash = (await ssri.fromStream(fs.createReadStream('./public/script.js'), {
-    algorithms: ['sha384']
-  })).toString()
-  const integrity = `integrity="${integrityHash}"`;
-  // const integrity = ``;
+    // const integrityHash = (await ssri.fromStream(fs.createReadStream('./public/script.js'), {
+    //   algorithms: ['sha384']
+    // })).toString()
+    // const integrity = `integrity="${integrityHash}"`;
+    const integrity = ``;
 
-  const scriptSrc = new URL('/script.js', selfURL).href;
+    const scriptSrc = new URL('/script.js', selfURL).href;
 
 
-  const script = `
-<script crossorigin="anonymous" src="${scriptSrc}" ${integrity}>
+    const script = `
+<script crossorigin="anonymous" src="${scriptSrc}" ${integrity}></script>
 <supp-dapp project="${projectName}" key="${encryptedConfig}" host="${selfURL}"></supp-dapp>`
 
-  response.setHeader('content-type', 'text/plain');
-  response.send(script);
+    response.setHeader('content-type', 'text/plain');
+    response.send(script);
+  } catch (err) {
+    response.status(500).send(err.message)
+  }
 
 }
 
