@@ -8,7 +8,7 @@ const INPUTS = {
   contractAddress: "contractAddress",
 };
 
-const Signup = ({ ethereum }) => {
+const Signup = ({ ethereum, onSubmit }) => {
   const [nickname, setNickname] = React.useState("");
   const [projectName, setprojectName] = React.useState("");
   const [projectUrl, setprojectUrl] = React.useState("");
@@ -42,17 +42,18 @@ const Signup = ({ ethereum }) => {
       contractAddress,
     };
 
-    const response = await ethereum.request({
-      method: "wallet_invokeSnap",
-      params: [
-        snapId,
-        {
-          method: "hello",
-          projectUrl,
-        },
-      ],
-    });
-    console.log(response);
+    // const response = await ethereum.request({
+    //   method: "wallet_invokeSnap",
+    //   params: [
+    //     snapId,
+    //     {
+    //       method: "hello",
+    //       projectUrl,
+    //     },
+    //   ],
+    // });
+    console.log(object);
+    onSubmit()
   };
 
   return (

@@ -13,7 +13,9 @@ const App = () => {
   const [wallet, setWallet] = React.useState();
   const [modalVisibility, setModalVisibility] = React.useState(false);
   const [isSignedUp, setIsSignedUp] = React.useState(false);
-  const [isSnapInstalled, setIsSnapInstalled] = React.useState(false);
+
+  // bypass snap
+  const [isSnapInstalled, setIsSnapInstalled] = React.useState(true);
   const [tickets, setTickets] = React.useState([]);
 
   React.useEffect(() => {
@@ -27,7 +29,7 @@ const App = () => {
       setWallet(newWallet);
     });
     initWallet();
-    getSnaps();
+    // getSnaps();
   }, [ethereum]);
 
   const initWallet = async () => {
@@ -135,6 +137,8 @@ const App = () => {
 
   const isSetupComplete = wallet && isSnapInstalled;
 
+  const handleRowClick = () => null
+
   return (
     <div>
       <div className="navbar bg-base-100">
@@ -150,12 +154,9 @@ const App = () => {
       <div className="flex h-screen">
         <div className="justify-center items-center m-auto">
           {!isSetupComplete && <img src={"assets/landing.png"} />}
-          {isSetupComplete && <Signup ethereum={ethereum} />}
-          {/* {isSignedUp ? ( */}
-          {/*   <Dashboard tickets={tickets} onRowClick={handleRowClick} /> */}
-          {/* ) : ( */}
-          {/*   <Signup ethereum={ethereum} /> */}
-          {/* )} */}
+          {isSetupComplete && <Dashboard tickets={tickets} onRowClick={handleRowClick} />}
+          {/* {isSetupComplete && !isSignedUp && <Signup ethereum={ethereum} onSubmit={handleSignupSubmit} />} */}
+          {/* {isSignedUp && <Dashboard tickets={tickets} onRowClick={handleRowClick} />} */}
         </div>
         <Modal
           isVisible={modalVisibility}
