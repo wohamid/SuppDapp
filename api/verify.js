@@ -1,6 +1,8 @@
 import Cookies from 'cookies'
 import fetch from 'node-fetch';
 import { parseCookie } from '../lib/siwe.js';
+import { createKey } from '../lib/scriptHelper.js';
+import { getProjectByContract, verifyProject } from '../lib/persistence.js';
 
 /**
  * 
@@ -22,19 +24,23 @@ export default async function handler(
 
     // const wallet = request.query.wallet; // for testing
     const contract = request.query.contract;
-    const projectInfo = await getProjectInfo(contract);
+    const projectInfo = await getProjectByContract(contract);
     
     if (!projectInfo || projectInfo.owner !== wallet) {
       response.status(403).send();
       return;
     }
 
-  const r = await fetch(projectInfo.origin);
-  const body = await r.text(); // might be better to do this as a stream if this app were real
+    const siteUrl = projectInfo.origin;
 
-  if (body.includes(projectInfo.script)) {
-    await setVerified(contract);
-    response.status(200).send();
+    const scriptKey = createKey(contract, siteUrl);
+
+    const r = await fetch(siteUrl);
+    const body = await r.text(); // might be better to do this as a stream if this app were real
+
+  if (body.includes(scriptKey)) {
+    const result = await verifyProject(contract);
+    response.status(200).json(result)
   } else {
     response.status(400).send();
     return;
@@ -45,19 +51,4 @@ export default async function handler(
     response.status(500).send();
   }
 
-}
-
-// TODO - read from storage
-async function getProjectInfo(contract) {
-  return {
-    owner: 'fiewfiow',
-    contract,
-    origin: 'https://www.google.com',
-    script: `><input name="biw" type="hidden"><input name="bih" type="hidden"><di`
-  }
-}
-
-async function setVerified(contract) {
-  // TODO - set 'verified' to true in storage
-  return;
 }
