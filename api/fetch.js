@@ -41,6 +41,11 @@ import { allowCors } from '../lib/corsHelper.js';
   }
 
   async function getContract(origin) {
-      // TODO - read from storage
-      return '0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d'
+    console.log(origin)
+    // TODO - read from storage
+    switch (origin) {
+      case 'https://martahj.github.io/calabasas-cave-public/':
+        return '0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d'
+      default: return null
+    }
   }

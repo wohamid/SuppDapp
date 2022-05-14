@@ -1,33 +1,56 @@
 import React from "react";
-import Dashboard from "./Dashboard"
-import Signup from "./Signup"
-import Modal from "../components/Modal"
+import Dashboard from "./Dashboard";
+import Signup from "./Signup";
+import Modal from "../components/Modal";
+
+export const snapId = "local:http://localhost:8080/";
 
 const App = () => {
+  const { ethereum } = window;
+
   const [wallet, setWallet] = React.useState();
   const [modalVisibility, setModalVisibility] = React.useState(false);
-  const [isSignedUp, setIsSignedUp] = React.useState(true);
+  const [isSignedUp, setIsSignedUp] = React.useState(false);
+  const [isSnapInstalled, setIsSnapInstalled] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!ethereum) return console.log("no ethereum!");
+    console.log("have ethereum");
+
+    ethereum.on("connect", console.log);
+    ethereum.on("disconnect", console.log);
+    ethereum.on("accountsChanged", (newAccounts) => {
+      const [newWallet] = newAccounts;
+      setWallet(newWallet);
+    });
+    initWallet();
+  }, [ethereum]);
+
+  const initWallet = async () => {
+    try {
+      const [newAccount] = await ethereum.request({
+        method: "eth_accounts",
+      });
+      setWallet(newAccount);
+    } catch (err) {
+      console.error("Error on init when getting accounts", err);
+    }
+  };
 
   const handleOnConnectWalletClick = async () => {
-    const { ethereum } = window;
     const [mmWallet] = await ethereum.request({
       method: "eth_requestAccounts",
     });
 
-    console.log(mmWallet)
+    console.log(mmWallet);
 
     setWallet(mmWallet);
-  };
-  const handleRowClick = () => {
-    setModalVisibility(!modalVisibility);
   };
 
   const handleCloseModal = () => {
     console.log("lets close");
     setModalVisibility(false);
   };
-
-  const buttonText = wallet ?? "Connect Wallet";
 
   const ticket = {
     id: "Ticket 1",
@@ -56,6 +79,18 @@ const App = () => {
     messages: [userMessage, myMessage, userMessage, myMessage, userMessage],
   };
 
+  const handleInstallSnapClick = async () => {
+    const result = await ethereum.request({
+      method: "wallet_enable",
+      params: [
+        {
+          wallet_snap: { [snapId]: {} },
+        },
+      ],
+    });
+    console.log(result);
+  };
+
   const tickets = [
     ticket,
     ticket,
@@ -68,23 +103,28 @@ const App = () => {
     ticket,
   ];
 
-  const handleSignupSubmit = () => {
-    setIsSignedUp(true)
-  }
-
   return (
-    <div>
-      <div className="container mx-auto">
-        <div className="container flex justify-end my-10">
+    <div className="flex h-screen">
+      <div className="justify-center items-center m-auto">
+        <p className="text-2xl text-center my-10">SuppDapp</p>
+        {!wallet && (
           <button
             className="btn btn-primary"
             onClick={handleOnConnectWalletClick}
           >
-            {buttonText}
+            Connect Metamask
           </button>
-        </div>
-        
-        {isSignedUp ? <Dashboard tickets={tickets} onRowClick={handleRowClick} /> : <Signup onSubmit={handleSignupSubmit} />}
+        )}
+        {wallet && (
+          <button className="btn btn-primary" onClick={handleInstallSnapClick}>
+            Install Snap
+          </button>
+        )}
+        {/* {isSignedUp ? ( */}
+        {/*   <Dashboard tickets={tickets} onRowClick={handleRowClick} /> */}
+        {/* ) : ( */}
+        {/*   <Signup ethereum={ethereum} /> */}
+        {/* )} */}
       </div>
       <Modal
         isVisible={modalVisibility}

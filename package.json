@@ -18,7 +18,8 @@
     }
   },
   "scripts": {
-    "st": "next dev",
+    "dev": "parcel serve",
+    "watch": "parcel watch src/app/index.js",
     "start": "npm run script:build& npm run localdev",
     "build": "patch-package && npm run script:build && next build",
     "localdev": "vercel dev",
