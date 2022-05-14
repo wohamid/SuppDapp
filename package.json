@@ -18,7 +18,7 @@
     }
   },
   "scripts": {
-    "st": "next dev",
+    "dev": "parcel serve",
     "start": "npm run script:build& npm run localdev",
     "build": "patch-package && npm run script:build && next build",
     "localdev": "vercel dev",
@@ -26,6 +26,7 @@
     "script:build": "parcel build",
     "postinstall": "patch-package"
   },
+  "type": "module",
   "author": "",
   "license": "ISC",
   "devDependencies": {

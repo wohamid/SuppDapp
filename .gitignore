@@ -3,5 +3,6 @@ node_modules
 .vercel
 .parcel-cache
 .next
+dist
 public/*
 !public/simpletest.html
