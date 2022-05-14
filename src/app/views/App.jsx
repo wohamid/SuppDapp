@@ -95,8 +95,6 @@ const App = () => {
   };
   console.log('in');
 
-  const getTickets = async () => {
-    console.log('start');
   const handleInstallSnapClick = async () => {
     const result = await ethereum.request({
       method: "wallet_enable",
@@ -122,20 +120,16 @@ const App = () => {
     return null;
   };
 
-    const tickets = await loadTicketsForOwner(999);
-    console.log(tickets);
-    setTickets(tickets);
-  }
 
-  React.useEffect(() => {
-    getTickets();
-  }, []);
-  console.log('after');
+  // React.useEffect(() => {
+  //   getTickets();
+  // }, []);
 
 
   const handleSignupSubmit = () => {
     setIsSignedUp(true)
   }
+
   const buttonLabel = getButtonLabel();
   const buttonClickHandler = getButtonHandler();
 
