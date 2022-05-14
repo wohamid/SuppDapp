@@ -18,6 +18,7 @@
     }
   },
   "scripts": {
+    "st": "next dev",
     "start": "npm run script:build& npm run localdev",
     "build": "patch-package && npm run script:build && next build",
     "localdev": "vercel dev",
@@ -25,23 +26,29 @@
     "script:build": "parcel build",
     "postinstall": "patch-package"
   },
-  "type": "module",
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@parcel/transformer-inline-string": "^2.5.0",
     "buffer": "^6.0.3",
+    "eslint": "^8.15.0",
+    "eslint-plugin-react": "^7.29.4",
     "events": "^3.3.0",
-    "next": "^12.1.6",
     "parcel": "^2.5.0",
     "patch-package": "^6.4.7",
-    "process": "^0.11.10"
+    "postcss": "^8.4.13",
+    "process": "^0.11.10",
+    "tailwindcss": "^3.0.24"
   },
   "dependencies": {
     "cookies": "^0.8.0",
+    "daisyui": "^2.14.3",
     "ethers": "^5.5.0",
     "jsonwebtoken": "^8.5.1",
+    "next": "^12.1.6",
     "node-fetch": "^3.2.4",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
     "siwe": "1.1.6",
     "ssri": "^9.0.0"
   }
