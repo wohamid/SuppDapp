@@ -7,4 +7,6 @@ public/*
 !public/simpletest.html
 !public/bunny_whisper.png
 .data
-dist
+dist/
+
+.idea/

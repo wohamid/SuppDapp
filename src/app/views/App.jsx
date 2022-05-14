@@ -1,7 +1,9 @@
 import React from "react";
-import Dashboard from "./Dashboard";
-import Signup from "./Signup";
-import Modal from "../components/Modal";
+import Dashboard from "./Dashboard"
+import Signup from "./Signup"
+import Modal from "../components/Modal"
+import getRedis, { testKeys } from "../../../lib/redis";
+import { loadTicketsForOwner } from "../services/db";
 
 export const snapId = "local:http://localhost:8080/";
 
@@ -12,6 +14,7 @@ const App = () => {
   const [modalVisibility, setModalVisibility] = React.useState(false);
   const [isSignedUp, setIsSignedUp] = React.useState(false);
   const [isSnapInstalled, setIsSnapInstalled] = React.useState(false);
+  const [tickets, setTickets] = React.useState([]);
 
   React.useEffect(() => {
     if (!ethereum) return console.log("no ethereum!");
@@ -90,7 +93,10 @@ const App = () => {
     description: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
     messages: [userMessage, myMessage, userMessage, myMessage, userMessage],
   };
+  console.log('in');
 
+  const getTickets = async () => {
+    console.log('start');
   const handleInstallSnapClick = async () => {
     const result = await ethereum.request({
       method: "wallet_enable",
@@ -116,18 +122,20 @@ const App = () => {
     return null;
   };
 
-  const tickets = [
-    ticket,
-    ticket,
-    ticket,
-    ticket,
-    ticket,
-    ticket,
-    ticket,
-    ticket,
-    ticket,
-  ];
+    const tickets = await loadTicketsForOwner(999);
+    console.log(tickets);
+    setTickets(tickets);
+  }
 
+  React.useEffect(() => {
+    getTickets();
+  }, []);
+  console.log('after');
+
+
+  const handleSignupSubmit = () => {
+    setIsSignedUp(true)
+  }
   const buttonLabel = getButtonLabel();
   const buttonClickHandler = getButtonHandler();
 
@@ -164,5 +172,21 @@ const App = () => {
     </div>
   );
 };
+
+// async function loadTickets() {
+//   return new Promise((resolve) => {
+//     const tickets = await loadTicketsForOwner(999)
+//     console.log(tickets);
+
+//     resolve([{
+//       id: "Ticket 1",
+//       type: "General Support",
+//       state: "In Progress",
+//       commState: "Waiting for a reply",
+//       submittedBy: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+//       description: "Cannot Buy NFT",
+//     }]);
+//   })
+// }
 
 export default App;
