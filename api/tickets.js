@@ -1,7 +1,7 @@
 import Cookies from 'cookies'
 import { decryptObj } from '../lib/crypt.js';
 import { allowCors } from '../lib/corsHelper.js';
-import { getMessagesBetween } from '../lib/persistence.js';
+import {deleteTicketByKey, getMessagesBetween, getTicketsForOwner} from '../lib/persistence.js';
 import {findByPrefix, getById} from '../lib/redis.js';
 
 
@@ -21,7 +21,11 @@ export default allowCors(async function handler(
     const projectKey = request.headers['x-project-key'];
     const origin = request.headers.origin;
 
-    const test = await findByPrefix('123*');
+    //const test = await getTicketsForOwner('123');
+    const tickets = await findByPrefix('123*');
+    for (const key in tickets) {
+        const isDeleted = await deleteTicketByKey(tickets[key]);
+    }
 
     response.json(test);
 
