@@ -27,6 +27,25 @@
   border-radius: 5px;
 }
 
+.supp-button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+.supp-snapp-button {
+  margin-right: 30px;
+}
+.supp-snapp-button b {
+  background-color: var(--indicator-cl);
+  height: 1em;
+  border-radius: 50%;
+  text-align: center;
+  padding: 3px 7px;
+  color: #fff;
+}
+
 .supp-btn {
   width: 64px;
   height: 64px;

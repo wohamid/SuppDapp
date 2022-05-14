@@ -1,8 +1,9 @@
 import Cookies from 'cookies'
 import ethers from 'ethers';
 import { parseCookie } from '../lib/siwe.js';
+import { createProject } from '../lib/persistence.js';
 
-const provider = ethers.getDefaultProvider('homestead', {
+const provider = ethers.getDefaultProvider('rinkeby', {
   infura: process.env.INFURA_PROJECT_ID
 })
 
@@ -43,6 +44,7 @@ export default async function handler(
     // const wallet = request.body.wallet // for testing
     const projectOrigin = request.body.origin;
     const projectContract = request.body.contract;
+    const projectName = request.body.name;
 
     safeInputStrings({
       projectOrigin, projectContract
@@ -60,15 +62,14 @@ export default async function handler(
       return;
     }
 
-    /*
-     * todo - store:
-     - script (maybe store this during generate endpoint?)
-     - contract
-     - owner
-     - verified: false
-    */
+    const project = await createProject({
+      contract: projectContract,
+      name: projectName,
+      owner: wallet,
+      origin: projectOrigin
+    });
 
-    response.status(201).send();
+    response.status(201).json(project);
     return;
   } catch(err) {
     response.status(500).send();

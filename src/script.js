@@ -8,8 +8,6 @@ import { framework } from './framework';
 const domain = window.location.host;
 const origin = window.location.origin;
 
-
-
 class SuppDapp extends HTMLElement {
   constructor() {
     // Always call super first in constructor
@@ -23,7 +21,7 @@ class SuppDapp extends HTMLElement {
     this.wrapper = wrapper
     wrapper.innerHTML = scaffoldingHTML;
     shadow.append(style, wrapper);
-    this.snapId = `local:http://localhost:8080/`;
+    this.snapId = `npm:snaps-test-hkyutpf94r8`;
   }
   // executed when tag is used in a document, first moment to read attributes
   connectedCallback() {
@@ -36,12 +34,12 @@ class SuppDapp extends HTMLElement {
       config: this.config,
       wrapper: this.wrapper,
       getAuth: this.getAuth.bind(this),
-      connectToSnap: this.connectToSnap.bind(this),
+      verifyWithSnap: this.verifyWithSnap.bind(this),
       fetcher: this.fetcher.bind(this)
     })
     console.log(this.config)
   }
-  app({ wrapper, getAuth, config, fetcher, connectToSnap }) {
+  app({ wrapper, getAuth, config, fetcher, verifyWithSnap }) {
     this.framework = framework({
       root: wrapper,
       dev: true,
@@ -68,7 +66,7 @@ class SuppDapp extends HTMLElement {
           store.currentTicket = id;
         },
         async connectSnap(store) {
-          connectToSnap()
+          return verifyWithSnap()
           // could await a result and save to store
         },
         load(store) {
@@ -135,7 +133,7 @@ class SuppDapp extends HTMLElement {
       },
       reactions: [
         function init($, store) {
-          const { load, send, toggle, newTic } = store.actions;
+          const { load, send, toggle, newTic, connectSnap } = store.actions;
           $('.supp-btn').style.backgroundImage = `url('${new URL('bunny_whisper.png',store.config.host).href}')`;
 
           $('.supp-btn').addEventListener('click', async (e) => {
@@ -155,6 +153,10 @@ class SuppDapp extends HTMLElement {
           $('.supp-new-btn').addEventListener('click', () => {
             newTic($('.supp-title').value)
             $('.supp-title').value = '';
+          })
+          $('.verify-site-button').addEventListener('click', async () => {
+            const siteVerified = await connectSnap(); 
+             // todo - change UI based on return value
           })
           load()
           return this.ONCE // run this reaction only once at the beginning
@@ -205,6 +207,9 @@ class SuppDapp extends HTMLElement {
           } else {
             $('.supp-tix').style.display = "none";
           }
+        },
+        function renderSnapButton($, store) {
+          $('.supp-snapp-button').style.display = store.isOpen ? 'unset' : 'none';
         },
         function renderSendingState($, store) {
           $('.supp-send').disabled = store.isSending;
@@ -289,26 +294,32 @@ class SuppDapp extends HTMLElement {
     });
     return message.prepareMessage();
   }
-  async connectToSnap() {
-
-    await window.ethereum.request({
-      method: 'wallet_enable',
-      params: [{
-        wallet_snap: { [this.snapId]: {} },
-      }]
-    });
-    const verification = await window.ethereum.request({
-      method: 'wallet_invokeSnap',
-      params: [this.snapId, {
-        method: 'hello'
-      }]
-    })
-    if (verification) {
-      if (verification.valid) {
-        console.log(`This page has been verified by SuppDapp to provide support for contract ${verification.contract}`);
-      } else {
-        console.log('Could not confirm that this page has been verified by SuppDapp');
+  async verifyWithSnap() {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_enable',
+        params: [{
+          wallet_snap: { [this.snapId]: {} },
+        }]
+      });
+      const verification = await window.ethereum.request({
+        method: 'wallet_invokeSnap',
+        params: [this.snapId, {
+          method: 'hello'
+        }]
+      })
+      if (verification) {
+        if (verification.valid) {
+          console.log(`This page has been verified by SuppDapp to provide support for contract ${verification.contract}`);
+          return true;
+        } else {
+          console.log('Could not confirm that this page has been verified by SuppDapp');
+        }
+        return false;
       }
+    } catch(err) {
+      console.log('error loading snap', err);
+      alert('Something went wrong connecting to SuppSnapp. Please make sure you are using the development build of MetaMask, Flask.')
     }
   }
 
