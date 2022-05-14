@@ -24,6 +24,7 @@ const App = () => {
       setWallet(newWallet);
     });
     initWallet();
+    getSnaps();
   }, [ethereum]);
 
   const initWallet = async () => {
@@ -35,6 +36,17 @@ const App = () => {
     } catch (err) {
       console.error("Error on init when getting accounts", err);
     }
+  };
+
+  const getSnaps = async () => {
+    const result = await ethereum.request({ method: "wallet_getSnaps" });
+
+    const snapInstalledWithPermission = Boolean(
+      result[snapId] && !result[snapId].error
+    );
+
+    console.log(result);
+    setIsSnapInstalled(snapInstalledWithPermission);
   };
 
   const handleOnConnectWalletClick = async () => {
@@ -89,6 +101,19 @@ const App = () => {
       ],
     });
     console.log(result);
+    if (!result.snaps[snapId].error) setIsSnapInstalled(true);
+  };
+
+  const getButtonLabel = () => {
+    if (!wallet) return "Connect Metamask";
+    if (wallet && !isSnapInstalled) return "Install Snap";
+    return wallet;
+  };
+
+  const getButtonHandler = () => {
+    if (!wallet) return handleOnConnectWalletClick;
+    if (wallet && !isSnapInstalled) return handleInstallSnapClick;
+    return null;
   };
 
   const tickets = [
@@ -103,34 +128,39 @@ const App = () => {
     ticket,
   ];
 
+  const buttonLabel = getButtonLabel();
+  const buttonClickHandler = getButtonHandler();
+
+  const isSetupComplete = wallet && isSnapInstalled;
+
   return (
-    <div className="flex h-screen">
-      <div className="justify-center items-center m-auto">
-        <p className="text-2xl text-center my-10">SuppDapp</p>
-        {!wallet && (
-          <button
-            className="btn btn-primary"
-            onClick={handleOnConnectWalletClick}
-          >
-            Connect Metamask
+    <div>
+      <div className="navbar bg-base-100">
+        <div className="flex-1">
+          <a className="btn btn-ghost normal-case text-xl">SuppDapp</a>
+        </div>
+        <div className="flex-none">
+          <button className="btn btn-primary" onClick={buttonClickHandler}>
+            {buttonLabel}
           </button>
-        )}
-        {wallet && (
-          <button className="btn btn-primary" onClick={handleInstallSnapClick}>
-            Install Snap
-          </button>
-        )}
-        {/* {isSignedUp ? ( */}
-        {/*   <Dashboard tickets={tickets} onRowClick={handleRowClick} /> */}
-        {/* ) : ( */}
-        {/*   <Signup ethereum={ethereum} /> */}
-        {/* )} */}
+        </div>
       </div>
-      <Modal
-        isVisible={modalVisibility}
-        onClose={handleCloseModal}
-        ticket={ticketDetails}
-      />
+      <div className="flex h-screen">
+        <div className="justify-center items-center m-auto">
+          {!isSetupComplete && <img src={"assets/landing.png"} />}
+          {isSetupComplete && <Signup ethereum={ethereum} />}
+          {/* {isSignedUp ? ( */}
+          {/*   <Dashboard tickets={tickets} onRowClick={handleRowClick} /> */}
+          {/* ) : ( */}
+          {/*   <Signup ethereum={ethereum} /> */}
+          {/* )} */}
+        </div>
+        <Modal
+          isVisible={modalVisibility}
+          onClose={handleCloseModal}
+          ticket={ticketDetails}
+        />
+      </div>
     </div>
   );
 };
