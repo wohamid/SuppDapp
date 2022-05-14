@@ -266,7 +266,7 @@ class SuppDapp extends HTMLElement {
     );
     const signature = await this.signer.signMessage(message);
 
-    const res = await fetch(`${this.config.host}/api/siwe`, {
+    const res = await fetch(new URL('/api/siwe', this.config.host).href, {
       method: "POST",
       headers: {
         'Content-Type': 'application/json',
@@ -280,7 +280,7 @@ class SuppDapp extends HTMLElement {
     throw Error(await res.text());
   }
   async createSiweMessage(address, statement) {
-    const res = await fetch(`${this.config.host}/api/siwe`, {
+    const res = await fetch(new URL('/api/siwe', this.config.host).href, {
       credentials: 'include',
     });
     const message = new SiweMessage({
