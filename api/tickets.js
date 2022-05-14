@@ -23,11 +23,10 @@ export default allowCors(async function handler(
 
     //const test = await getTicketsForOwner('123');
     const tickets = await findByPrefix('123*');
-    for (const key in tickets) {
-        const isDeleted = await deleteTicketByKey(tickets[key]);
-    }
+    // TODO: owner from cookie
+    const result = await getTicketsForOwner(tickets[0]);
 
-    response.json(test);
+    response.json(result);
 
     // if (!siwe) {
     //     response.status(401).send(`No auth`);
