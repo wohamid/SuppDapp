@@ -112,6 +112,7 @@ const App = () => {
 
   const signIn = async (contractAddress) => {
     if (!wallet) return false;
+    console.log(process.env.BACKEND_HOST);
 
     const urlParams = contractAddress
       ? `contract=${contractAddress}&wallet=${wallet}`
@@ -217,8 +218,11 @@ const App = () => {
     const generatedCodeResult = await fetch(
       `${process.env.BACKEND_HOST}/generate2?address=${contractAddress}&projectName=${projectName}&page=${projectUrl}`
     );
+    console.log(generatedCodeResult);
     if (generatedCodeResult.ok) {
       const codeSnippet = await generatedCodeResult.text();
+      console.log(codeSnippet);
+      console.log("code generated");
       setGeneratedCode(codeSnippet);
       setSignUpState(SIGNUP_STATES.codeGenerated);
     }
@@ -284,7 +288,6 @@ const App = () => {
       </div>
       <div className="flex h-screen">
         {wallet &&
-          !isSignedIn &&
           signupState === SIGNUP_STATES.codeGenerated && (
             <CodeSnippet
               code={generatedCode}
@@ -335,7 +338,7 @@ const App = () => {
             signupState === SIGNUP_STATES.signupForm && (
               <Signup onSubmit={handleSignupSubmit} />
             )}
-          {wallet && isSignedIn && (
+          {wallet && isSignedIn && signupState === SIGNUP_STATES.idle && (
             <Dashboard tickets={tickets} onRowClick={handleRowClick} />
           )}
           {error && (

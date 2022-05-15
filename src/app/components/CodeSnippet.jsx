@@ -8,7 +8,7 @@ const CodeSnippet = ({ code, onDoneClick }) => {
           <p className="py-3">{`Please copy the code provided below and paste it on your website, before the closing tag </body>`}</p>
           <p className="py-3">{`Press Get Started and start managing your tickets from your dashboard`}</p>
           <div class="mockup-code p-5">
-              <code>{code}</code>
+            <code>{code}</code>
           </div>
           <button className="btn btn-primary my-10" onClick={onDoneClick}>
             Close
@@ -16,16 +16,6 @@ const CodeSnippet = ({ code, onDoneClick }) => {
         </div>
       </div>
     </div>
-    // <div className={"container"}>
-    //   <div>
-    //
-    //     <br />
-    //     <code>{code}</code>
-    //     <button className="btn btn-primary " onClick={onDoneClick}>
-    //       Close
-    //     </button>
-    //   </div>
-    // </div>
   );
 };
 
