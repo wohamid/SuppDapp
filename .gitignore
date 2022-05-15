@@ -3,9 +3,9 @@ node_modules
 .parcel-cache
 .next
 public/*
+!public/landing.png
 !public/simpletest.html
 !public/bunny_whisper.png
 .data
 dist/
-
 .idea/

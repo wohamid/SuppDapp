@@ -1,5 +1,4 @@
 import React from "react";
-import { snapId } from "./App";
 
 const INPUTS = {
   nickname: "nickname",
@@ -8,7 +7,7 @@ const INPUTS = {
   contractAddress: "contractAddress",
 };
 
-const Signup = ({ ethereum, onSubmit }) => {
+const Signup = ({ onSubmit }) => {
   const [nickname, setNickname] = React.useState("");
   const [projectName, setprojectName] = React.useState("");
   const [projectUrl, setprojectUrl] = React.useState("");
@@ -35,28 +34,16 @@ const Signup = ({ ethereum, onSubmit }) => {
 
   const handleSubmit = async () => {
     const object = {
-      // projectUrl: "https://martahj.github.io/calabasas-cave-public/",
       nickname,
       projectName,
       projectUrl,
       contractAddress,
     };
-
-    // const response = await ethereum.request({
-    //   method: "wallet_invokeSnap",
-    //   params: [
-    //     snapId,
-    //     {
-    //       method: "hello",
-    //       projectUrl,
-    //     },
-    //   ],
-    // });
     console.log(object);
-    onSubmit()
+    onSubmit(object)
   };
 
-  return (
+  return  (
       <div className="container flex flex-col justify-center items-center">
         <div className="form-control">
           <form onSubmit={handleSubmit}>
