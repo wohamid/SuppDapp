@@ -22,7 +22,7 @@ export default allowCors(async function handler(
     const origin = request.headers.origin;
 
     // TODO: get it from cookie, but time is short so hardcode for now
-    const owner = '123';
+    const owner = '997';
 
     //const test = await getTicketsForOwner('123');
     if (request.method.toLowerCase() === 'get') {
@@ -39,12 +39,11 @@ export default allowCors(async function handler(
         payload.id = body.ticketId;
         response.status(201).json(payload);
         return;
+    } else  if (request.method.toLowerCase() === 'delete') {
+        await resetOwnerKeys(owner);
     }
     // In case deleting is needed
-    // else  if (request.method.toLowerCase() === 'delete') {
-    //     await resetOwnerKeys(owner);
-    //
-    // }
+
     // TODO: owner from cookie
 
     response.json(null);

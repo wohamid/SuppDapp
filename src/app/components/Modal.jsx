@@ -34,6 +34,7 @@ export default function Modal({ isVisible, onClose, ticket, onTicketChanged }) {
       const result = await respondToTicket(ticket.id, messageToSend, ticket.user);
       console.log('result is' + result);
       onTicketChanged(result);
+      setMessageToSend('');
     }
   }
 
