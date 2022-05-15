@@ -3,7 +3,6 @@
 const DUMMY_OWNER = '123';
 
 const Message = ({ message }) => {
-  console.log(message);
   const { walletAddress, createdAt, text } = message;
 
   // TODO: Save auth walletAddress on localstorage & hydrate react context with it
