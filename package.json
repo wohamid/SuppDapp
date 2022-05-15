@@ -19,6 +19,7 @@
   },
   "scripts": {
     "start": "npm run script:build& npm run localdev",
+    "dev": "parcel serve",
     "build": "patch-package && npm run script:build && next build",
     "localdev": "vercel dev",
     "script:watch": "parcel watch",
@@ -29,17 +30,22 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@parcel/css-linux-x64-gnu": "^1.8.3",
     "@parcel/transformer-inline-string": "^2.5.0",
     "assert": "^2.0.0",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
+    "daisyui": "^2.14.3",
     "events": "^3.3.0",
+    "next-swc-linux-x64-gnu": "^11.1.1-canary.3",
     "parcel": "^2.5.0",
     "patch-package": "^6.4.7",
+    "postcss": "^8.4.13",
     "process": "^0.11.10",
     "querystring-es3": "^0.2.1",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
+    "tailwindcss": "^3.0.24",
     "url": "^0.11.0"
   },
   "dependencies": {
