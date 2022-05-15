@@ -8,7 +8,7 @@ import { loadTicketsForOwner } from "../services/db";
 import { ethers } from "ethers";
 import { SiweMessage } from "siwe";
 
-export const snapId = "npm:snaps-test-hkyutpf94r8";
+// export const snapId = "npm:snaps-test-hkyutpf94r8";
 
 const SIGNUP_STATES = {
   idle: "idle",
@@ -260,7 +260,6 @@ const App = () => {
   };
 
   const handleContractAddressInputSubmit = async () => {
-    console.log(contractAddressInputValue);
     const isSignedIn = await signIn(contractAddressInputValue);
     if (isSignedIn) setSignUpState(SIGNUP_STATES.idle);
   };

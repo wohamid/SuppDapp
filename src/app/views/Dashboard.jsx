@@ -7,7 +7,26 @@ const Dash = ({ tickets, onRowClick }) => {
     onRowClick(ticketId);
   };
 
-  return (
+  return tickets.length < 1 ? (
+    <div className="alert shadow-lg">
+      <div>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          className="stroke-info flex-shrink-0 w-6 h-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          ></path>
+        </svg>
+        <span>You have no tickets</span>
+      </div>
+    </div>
+  ) : (
     <div className="overflow-x-auto w-full">
       <table className="table w-full">
         <thead>
@@ -21,8 +40,7 @@ const Dash = ({ tickets, onRowClick }) => {
         </thead>
         <tbody>
           {tickets.map((item, index) => {
-            const { id, _, commState, user, title, createdAt } =
-              item;
+            const { id, _, commState, user, title, createdAt } = item;
 
             return (
               <tr
@@ -49,7 +67,7 @@ const Dash = ({ tickets, onRowClick }) => {
                 <td>
                   <div className="font-bold">{title}</div>
                 </td>
-                <td>{createdAt ? new Date(createdAt).toDateString() : ''}</td>
+                <td>{createdAt ? new Date(createdAt).toDateString() : ""}</td>
               </tr>
             );
           })}
@@ -67,7 +85,5 @@ const Dash = ({ tickets, onRowClick }) => {
     </div>
   );
 };
-
-
 
 export default Dash;

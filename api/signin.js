@@ -32,12 +32,13 @@ const minimalErc721Abi = [
 export default async function handler(request, response) {
   try {
     const cookies = new Cookies(request, response, { secure: true });
-    const siwe = parseCookie(cookies);
-    if (!siwe) {
-      response.status(401).send(`No auth`);
-      return;
-    }
-    const wallet = siwe.address;
+    // const siwe = parseCookie(cookies);
+    // if (!siwe) {
+    //   response.status(401).send(`No auth`);
+    //   return;
+    // }
+    // const wallet = siwe.address;
+    const wallet = request.query.wallet
 
     const savedContract = cookies.get("contract");
 
