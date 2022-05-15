@@ -34,28 +34,16 @@ const Signup = ({ onSubmit }) => {
 
   const handleSubmit = async () => {
     const object = {
-      // projectUrl: "https://martahj.github.io/calabasas-cave-public/",
       nickname,
       projectName,
       projectUrl,
       contractAddress,
     };
-
-    // const response = await ethereum.request({
-    //   method: "wallet_invokeSnap",
-    //   params: [
-    //     snapId,
-    //     {
-    //       method: "hello",
-    //       projectUrl,
-    //     },
-    //   ],
-    // });
     console.log(object);
     onSubmit(object)
   };
 
-  return (
+  return  (
       <div className="container flex flex-col justify-center items-center">
         <div className="form-control">
           <form onSubmit={handleSubmit}>
