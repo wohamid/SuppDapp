@@ -1,8 +1,8 @@
 import Cookies from 'cookies'
-import { decryptObj } from '../lib/crypt.js';
 import { allowCors } from '../lib/corsHelper.js';
 import {getTicketsForOwner, resetOwnerKeys, appendMessage} from '../lib/persistence.js';
-import {findByPrefix, getById} from '../lib/redis.js';
+const owner = process.env.OWNER;
+
 
 
 /**
@@ -22,7 +22,6 @@ export default allowCors(async function handler(
     const origin = request.headers.origin;
 
     // TODO: get it from cookie, but time is short so hardcode for now
-    const owner = '997';
 
     //const test = await getTicketsForOwner('123');
     if (request.method.toLowerCase() === 'get') {

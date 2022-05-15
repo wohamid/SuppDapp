@@ -152,11 +152,11 @@ const App = () => {
     setModalVisibility(!modalVisibility);
   };
 
-  const handleTicketChanged = (ticket) => {
+  const handleTicketChanged = async (ticket) => {
     console.log('Ticket changed');
     console.log(ticket);
     setTicketDetails(ticket);
-    React.useEffect(() => loadTickets());
+    await loadTickets();
   }
 
   return (
