@@ -32,6 +32,8 @@ export default allowCors(async function handler(
         console.error(e)
         response.status(401).send(`Invalid auth`);
     }
+    console.log({ origin, project, projectKey, info });
+
     // There's no way for the page to lie about origin AFAIR, so this is a valid check
     // if origin is falsy, it's either not a cross-origin request (local testing) or it'd fail on establishing CORS
     if(origin && origin !== project.page) {

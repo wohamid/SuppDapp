@@ -21,7 +21,8 @@ class SuppDapp extends HTMLElement {
     this.wrapper = wrapper
     wrapper.innerHTML = scaffoldingHTML;
     shadow.append(style, wrapper);
-    this.snapId = `npm:snaps-test-hkyutpf94r8`;
+    this.snapId = 'local:http://localhost:8080/'
+    // this.snapId = `npm:snaps-test-hkyutpf94r8`;
   }
   // executed when tag is used in a document, first moment to read attributes
   connectedCallback() {

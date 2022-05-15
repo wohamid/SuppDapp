@@ -2,6 +2,7 @@ import Cookies from 'cookies'
 import ethers from 'ethers';
 import { parseCookie } from '../lib/siwe.js';
 import { createProject } from '../lib/persistence.js';
+import { createKey } from '../lib/scriptHelper.js';
 
 const provider = ethers.getDefaultProvider('rinkeby', {
   infura: process.env.INFURA_PROJECT_ID
@@ -39,12 +40,16 @@ export default async function handler(
         response.status(401).send(`No auth`);
         return;
     }
+    console.log('siwe', siwe);
     const wallet = siwe.address;
-    
+    console.log('wallet', wallet);
+
     // const wallet = request.body.wallet // for testing
     const projectOrigin = request.body.origin;
     const projectContract = request.body.contract;
     const projectName = request.body.name;
+
+    const key = createKey(projectContract, projectOrigin);
 
     safeInputStrings({
       projectOrigin, projectContract
@@ -66,7 +71,8 @@ export default async function handler(
       contract: projectContract,
       name: projectName,
       owner: wallet,
-      origin: projectOrigin
+      origin: projectOrigin,
+      key,
     });
 
     response.status(201).json(project);

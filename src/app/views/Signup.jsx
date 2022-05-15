@@ -1,5 +1,5 @@
-import React from "react";
-import { snapId } from "./App";
+import React, { useEffect, useCallback } from "react";
+import { BACKEND_ADDR } from '../constants/app';
 
 const INPUTS = {
   nickname: "nickname",
@@ -13,6 +13,7 @@ const Signup = ({ ethereum, onSubmit }) => {
   const [projectName, setprojectName] = React.useState("");
   const [projectUrl, setprojectUrl] = React.useState("");
   const [contractAddress, setcontractAddress] = React.useState("");
+  const [script, setScript] = React.useState('');
 
   const handleInputChange = (event) => {
     const {
@@ -33,14 +34,25 @@ const Signup = ({ ethereum, onSubmit }) => {
     }
   };
 
+  const verifyProject = useCallback(async () => {
+    const result = await verify(contractAddress)
+    console.log('verify result', result);
+  }, [contractAddress])
+
   const handleSubmit = async () => {
-    const object = {
-      // projectUrl: "https://martahj.github.io/calabasas-cave-public/",
+    console.log({
       nickname,
       projectName,
       projectUrl,
       contractAddress,
-    };
+    })
+
+    const generatedScript = await createProject({
+      url: projectUrl,
+      contract: contractAddress,
+      projectUrl
+    })
+    setScript(generatedScript || '');
 
     // const response = await ethereum.request({
     //   method: "wallet_invokeSnap",
@@ -52,13 +64,17 @@ const Signup = ({ ethereum, onSubmit }) => {
     //     },
     //   ],
     // });
-    console.log(object);
-    onSubmit()
+    // onSubmit()
   };
+
+  const onFinish = () => {
+    onSubmit();
+  }
 
   return (
       <div className="container flex flex-col justify-center items-center">
         <div className="form-control">
+          <h6>Project info</h6>
           <form onSubmit={handleSubmit}>
             <div className="m-5">
               <label className="label">
@@ -123,10 +139,58 @@ const Signup = ({ ethereum, onSubmit }) => {
           </form>
         </div>
         <button className="btn btn-primary " onClick={handleSubmit}>
-          Submit
+          Create project
         </button>
+        {Boolean(script) && (
+          <div style={{ maxWidth: '100%' }}>
+            <h6>Script and verification</h6>
+            <p>Paste this script into your site then verify your site</p>
+            <div>
+              {`${script}`}
+            </div>
+            <button onClick={verifyProject}>Verify</button>
+        </div>
+        )}
+        <button onClick={onFinish}>Finish</button>
       </div>
   );
 };
 
 export default Signup;
+
+async function createProject({ url, contract, name }) {
+  const createResult = await fetch(`${BACKEND_ADDR}/create`, {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    method: "POST",
+    body: JSON.stringify({
+        origin: url,
+        contract,
+        name,
+    })
+  })
+  if (!createResult.ok) {
+    alert('Failed to create project. Please make sure you are the owner of the contract');
+    return;
+  }
+
+  const scriptResult = await fetch(`${BACKEND_ADDR}/generate2?address=${contract}`)
+  if (!scriptResult.ok) {
+    alert('Problem creating script.');
+    return;
+  }
+
+  const script = await scriptResult.text();
+  return script;
+}
+
+async function verify(contract) {
+  const result = await fetch(`${BACKEND_ADDR}/verify?contract=${contract}`)
+  if (!result.ok) {
+    alert('Failed to verify site. Make sure the script is on the site and then try again.');
+    return;
+  }
+  return result.json();
+}

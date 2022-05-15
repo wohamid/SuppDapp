@@ -1,18 +1,26 @@
 import React from "react";
+import { ethers } from 'ethers';
 import Dashboard from "./Dashboard"
 import Signup from "./Signup"
 import Modal from "../components/Modal"
 import getRedis, { testKeys } from "../../../lib/redis";
 import { loadTicketsForOwner } from "../services/db";
+import useSiwe from '../hooks/useSiwe';
 
 export const snapId = "local:http://localhost:8080/";
 
 const App = () => {
   const { ethereum } = window;
+  const provider = React.useMemo(() => ethereum ? new ethers.providers.Web3Provider(window.ethereum): undefined, [ethereum])
+  const signer = React.useMemo(() => provider && provider.getSigner(), [])
 
   const [wallet, setWallet] = React.useState();
   const [modalVisibility, setModalVisibility] = React.useState(false);
   const [isSignedUp, setIsSignedUp] = React.useState(false);
+  const [creatingNewProject, setCreatingNewProject] = React.useState(false);
+
+  useSiwe(wallet, signer);
+
 
   // bypass snap
   const [isSnapInstalled, setIsSnapInstalled] = React.useState(true);
@@ -40,21 +48,22 @@ const App = () => {
         method: "eth_accounts",
       });
       setWallet(newAccount);
+
     } catch (err) {
       console.error("Error on init when getting accounts", err);
     }
   };
 
-  const getSnaps = async () => {
-    const result = await ethereum.request({ method: "wallet_getSnaps" });
+  // const getSnaps = async () => {
+  //   const result = await ethereum.request({ method: "wallet_getSnaps" });
 
-    const snapInstalledWithPermission = Boolean(
-      result[snapId] && !result[snapId].error
-    );
+  //   const snapInstalledWithPermission = Boolean(
+  //     result[snapId] && !result[snapId].error
+  //   );
 
-    console.log(result);
-    setIsSnapInstalled(snapInstalledWithPermission);
-  };
+  //   console.log(result);
+  //   setIsSnapInstalled(snapInstalledWithPermission);
+  // };
 
   const loadTickets = async () => {
     const result = await loadTicketsForOwner('123');
@@ -69,6 +78,7 @@ const App = () => {
     console.log(mmWallet);
 
     setWallet(mmWallet);
+
   };
 
   const handleCloseModal = () => {
@@ -103,28 +113,28 @@ const App = () => {
   //   messages: [userMessage, myMessage, userMessage, myMessage, userMessage],
   // };
 
-  const handleInstallSnapClick = async () => {
-    const result = await ethereum.request({
-      method: "wallet_enable",
-      params: [
-        {
-          wallet_snap: { [snapId]: {} },
-        },
-      ],
-    });
-    console.log(result);
-    if (!result.snaps[snapId].error) setIsSnapInstalled(true);
-  };
+  // const handleInstallSnapClick = async () => {
+  //   const result = await ethereum.request({
+  //     method: "wallet_enable",
+  //     params: [
+  //       {
+  //         wallet_snap: { [snapId]: {} },
+  //       },
+  //     ],
+  //   });
+  //   console.log(result);
+  //   if (!result.snaps[snapId].error) setIsSnapInstalled(true);
+  // };
 
   const getButtonLabel = () => {
     if (!wallet) return "Connect Metamask";
-    if (wallet && !isSnapInstalled) return "Install Snap";
+    // if (wallet && !isSnapInstalled) return "Install Snap";
     return wallet;
   };
 
   const getButtonHandler = () => {
     if (!wallet) return handleOnConnectWalletClick;
-    if (wallet && !isSnapInstalled) return handleInstallSnapClick;
+    // if (wallet && !isSnapInstalled) return handleInstallSnapClick;
     return null;
   };
 
@@ -136,6 +146,7 @@ const App = () => {
 
   const handleSignupSubmit = () => {
     setIsSignedUp(true)
+    setCreatingNewProject(false);
   }
 
   const buttonLabel = getButtonLabel();
@@ -171,11 +182,12 @@ const App = () => {
           </button>
         </div>
       </div>
+      {!creatingNewProject &&  <button onClick={() => {setCreatingNewProject(true)}}>Create new project</button>}
       <div className="flex h-screen">
         <div className="justify-center items-center m-auto">
-          {!isSetupComplete && <img src={"assets/landing.png"} />}
-          {isSetupComplete && <Dashboard tickets={tickets} onRowClick={(ticket) => handleRowClick(ticket)} />}
-          {/* {isSetupComplete && !isSignedUp && <Signup ethereum={ethereum} onSubmit={handleSignupSubmit} />} */}
+          {!isSetupComplete && !creatingNewProject && <img src={"assets/landing.png"} />}
+          {isSetupComplete && !creatingNewProject && <Dashboard tickets={tickets} onRowClick={(ticket) => handleRowClick(ticket)} />}
+          {creatingNewProject && <Signup ethereum={ethereum} onSubmit={handleSignupSubmit} />}
           {/* {isSignedUp && <Dashboard tickets={tickets} onRowClick={handleRowClick} />} */}
         </div>
         <Modal
