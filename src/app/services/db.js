@@ -1,4 +1,4 @@
-const hosturl = 'http://localhost:3000/api';
+const hosturl = process.env.BACKEND_HOST;
 
 export async function loadTicketsForOwner(owner) {
     const path = `${hosturl}/tickets`;
