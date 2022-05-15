@@ -1,7 +1,7 @@
 import Cookies from 'cookies'
 import { decryptObj } from '../lib/crypt.js';
 import { allowCors } from '../lib/corsHelper.js';
-import {getTicketsForOwner, resetOwnerKeys} from '../lib/persistence.js';
+import {getTicketsForOwner, resetOwnerKeys, appendMessage} from '../lib/persistence.js';
 import {findByPrefix, getById} from '../lib/redis.js';
 
 
@@ -33,10 +33,18 @@ export default allowCors(async function handler(
         return;
     } else if (request.method.toLowerCase() === 'post') {
         // TODO: save message
-    } else  if (request.method.toLowerCase() === 'delete') {
-        await resetOwnerKeys(owner);
-
+        const body = request.body; // should be a ticket id and message content
+        const result = await appendMessage(owner, body.user, owner, body.ticketId, body.message);
+        const payload = result[body.ticketId];
+        payload.id = body.ticketId;
+        response.status(201).json(payload);
+        return;
     }
+    // In case deleting is needed
+    // else  if (request.method.toLowerCase() === 'delete') {
+    //     await resetOwnerKeys(owner);
+    //
+    // }
     // TODO: owner from cookie
 
     response.json(null);

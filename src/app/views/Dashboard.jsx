@@ -2,8 +2,8 @@ import React from "react";
 
 const Dash = ({ tickets, onRowClick }) => {
   const handleRowClick = (ticketId) => {
-    console.log(`row of ticket ${ticketId} pressed`);
-    console.log("open modal");
+    // console.log(`row of ticket ${ticketId} pressed`);
+    // console.log("open modal");
     onRowClick(ticketId);
   };
 
@@ -26,9 +26,9 @@ const Dash = ({ tickets, onRowClick }) => {
 
             return (
               <tr
-                key={`${index}-ticketNumber`}
+                key={id}
                 className="hover cursor-pointer"
-                onClick={handleRowClick}
+                onClick={() => handleRowClick(item)}
               >
                 <td>
                   <div className="flex items-center space-x-3">

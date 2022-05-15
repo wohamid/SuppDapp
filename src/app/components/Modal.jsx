@@ -1,5 +1,6 @@
 import React from "react";
 import MessageList from "../components/MessageList"
+import { respondToTicket } from "../services/db";
 
 const emptyState = {
   name: "",
@@ -13,14 +14,28 @@ const emptyTicket = {
   states: [],
 };
 
-export default function Modal({ isVisible, onClose, ticket }) {
+export default function Modal({ isVisible, onClose, ticket, onTicketChanged }) {
   const hasTicket = Boolean(ticket);
   const shouldRender = isVisible && hasTicket;
   const classNames = shouldRender ? "modal modal-open" : "modal";
+  const [messageToSend, setMessageToSend] = React.useState('')
+  console.log(ticket);
 
   const handleChangeInput = (event) => {
-    console.log(event);
+    if (event && event.target && event.target.value) {
+      setMessageToSend(event.target.value);
+    } else {
+      setMessageToSend('');
+    }
   };
+
+  const sendMesage = async (event) => {
+    if (messageToSend) {
+      const result = await respondToTicket(ticket.id, messageToSend, ticket.user);
+      console.log('result is' + result);
+      onTicketChanged(result);
+    }
+  }
 
   return (
     <div className={classNames}>
@@ -41,7 +56,7 @@ export default function Modal({ isVisible, onClose, ticket }) {
             className="input input-bordered w-full self-ent mr-2"
             onChange={handleChangeInput}
           />
-          <button className="btn btn-circle">&gt;</button>
+          <button className="btn btn-circle" onClick={sendMesage}>&gt;</button>
         </div>
       </div>
     </div>
