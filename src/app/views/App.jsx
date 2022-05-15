@@ -17,6 +17,7 @@ const App = () => {
   // bypass snap
   const [isSnapInstalled, setIsSnapInstalled] = React.useState(true);
   const [tickets, setTickets] = React.useState([]);
+  const [ticketDetails, setTicketDetails] = React.useState({})
 
   React.useEffect(() => {
     if (!ethereum) return console.log("no ethereum!");
@@ -95,13 +96,12 @@ const App = () => {
     content: "Hi, how can I help you",
   };
 
-  const ticketDetails = {
-    id: 1,
-    title: "Cannot Buy NFT",
-    description: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
-    messages: [userMessage, myMessage, userMessage, myMessage, userMessage],
-  };
-  console.log('in');
+  // const ticketDetails = {
+  //   id: 1,
+  //   title: "Cannot Buy NFT",
+  //   description: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+  //   messages: [userMessage, myMessage, userMessage, myMessage, userMessage],
+  // };
 
   const handleInstallSnapClick = async () => {
     const result = await ethereum.request({
@@ -143,7 +143,21 @@ const App = () => {
 
   const isSetupComplete = wallet && isSnapInstalled;
 
-  const handleRowClick = () => null
+  // const handleRowClick = () => null
+
+  
+  const handleRowClick = (ticket) => {
+    console.log('In app');
+    setTicketDetails(ticket);
+    setModalVisibility(!modalVisibility);
+  };
+
+  const handleTicketChanged = (ticket) => {
+    console.log('Ticket changed');
+    console.log(ticket);
+    setTicketDetails(ticket);
+    React.useEffect(() => loadTickets());
+  }
 
   return (
     <div>
@@ -160,7 +174,7 @@ const App = () => {
       <div className="flex h-screen">
         <div className="justify-center items-center m-auto">
           {!isSetupComplete && <img src={"assets/landing.png"} />}
-          {isSetupComplete && <Dashboard tickets={tickets} onRowClick={handleRowClick} />}
+          {isSetupComplete && <Dashboard tickets={tickets} onRowClick={(ticket) => handleRowClick(ticket)} />}
           {/* {isSetupComplete && !isSignedUp && <Signup ethereum={ethereum} onSubmit={handleSignupSubmit} />} */}
           {/* {isSignedUp && <Dashboard tickets={tickets} onRowClick={handleRowClick} />} */}
         </div>
@@ -168,6 +182,7 @@ const App = () => {
           isVisible={modalVisibility}
           onClose={handleCloseModal}
           ticket={ticketDetails}
+          onTicketChanged={handleTicketChanged}
         />
       </div>
     </div>
