@@ -172,9 +172,9 @@ const App = () => {
         </div>
       </div>
       <div className="flex h-screen">
-        <div className="justify-center items-center m-auto">
-          {!isSetupComplete && <img src={"assets/landing.png"} />}
-          {isSetupComplete && <Dashboard tickets={tickets} onRowClick={(ticket) => handleRowClick(ticket)} />}
+        <div className="justify-center items-center flex">
+          {!isSetupComplete && <img className={'max-w-7xl'} src={"landing.png"} />}
+          {isSetupComplete && <Dashboard tickets={tickets} onRowClick={handleRowClick} />}
           {/* {isSetupComplete && !isSignedUp && <Signup ethereum={ethereum} onSubmit={handleSignupSubmit} />} */}
           {/* {isSignedUp && <Dashboard tickets={tickets} onRowClick={handleRowClick} />} */}
         </div>
