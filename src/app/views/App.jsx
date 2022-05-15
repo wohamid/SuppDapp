@@ -29,6 +29,7 @@ const App = () => {
       setWallet(newWallet);
     });
     initWallet();
+    loadTickets();
     // getSnaps();
   }, [ethereum]);
 
@@ -53,6 +54,11 @@ const App = () => {
     console.log(result);
     setIsSnapInstalled(snapInstalledWithPermission);
   };
+
+  const loadTickets = async () => {
+    const result = await loadTicketsForOwner('123');
+    setTickets(result);
+  }
 
   const handleOnConnectWalletClick = async () => {
     const [mmWallet] = await ethereum.request({

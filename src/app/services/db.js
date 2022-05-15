@@ -27,9 +27,9 @@ export async function loadTicketsForOwner(owner) {
 
     const test = await fetch(path);
     const parsed = await test.json();
-
     console.log(parsed);
-    return tickets;
+
+    return parsed;
 }
 
 export async function updateTicket() {

@@ -1,7 +1,7 @@
 import Cookies from 'cookies'
 import { decryptObj } from '../lib/crypt.js';
 import { allowCors } from '../lib/corsHelper.js';
-import {deleteTicketByKey, getMessagesBetween, getTicketsForOwner} from '../lib/persistence.js';
+import {getTicketsForOwner, resetOwnerKeys} from '../lib/persistence.js';
 import {findByPrefix, getById} from '../lib/redis.js';
 
 
@@ -21,12 +21,25 @@ export default allowCors(async function handler(
     const projectKey = request.headers['x-project-key'];
     const origin = request.headers.origin;
 
-    //const test = await getTicketsForOwner('123');
-    const tickets = await findByPrefix('123*');
-    // TODO: owner from cookie
-    const result = await getTicketsForOwner(tickets[0]);
+    // TODO: get it from cookie, but time is short so hardcode for now
+    const owner = '123';
 
-    response.json(result);
+    //const test = await getTicketsForOwner('123');
+    if (request.method.toLowerCase() === 'get') {
+
+        const result = await getTicketsForOwner(owner);
+
+        response.json(result);
+        return;
+    } else if (request.method.toLowerCase() === 'post') {
+        // TODO: save message
+    } else  if (request.method.toLowerCase() === 'delete') {
+        await resetOwnerKeys(owner);
+
+    }
+    // TODO: owner from cookie
+
+    response.json(null);
 
     // if (!siwe) {
     //     response.status(401).send(`No auth`);

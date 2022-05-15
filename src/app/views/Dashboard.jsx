@@ -21,7 +21,7 @@ const Dash = ({ tickets, onRowClick }) => {
         </thead>
         <tbody>
           {tickets.map((item, index) => {
-            const { id, type, state, commState, submittedBy, description } =
+            const { id, _, commState, user, title, createdAt } =
               item;
 
             return (
@@ -33,23 +33,23 @@ const Dash = ({ tickets, onRowClick }) => {
                 <td>
                   <div className="flex items-center space-x-3">
                     <div>
+                      <div className="text-sm opacity-50">Ticket</div>
                       <div className="font-bold">{id}</div>
-                      <div className="text-sm opacity-50">{type}</div>
                     </div>
                   </div>
                 </td>
                 <td>
-                  {state}
+                  In Progress
                   <br />
                   <span className="badge badge-ghost badge-sm">
                     {commState}
                   </span>
                 </td>
-                <td>{submittedBy}</td>
+                <td>{user}</td>
                 <td>
-                  <div className="font-bold">{description}</div>
+                  <div className="font-bold">{title}</div>
                 </td>
-                <td>{Date.now()}</td>
+                <td>{createdAt ? new Date(createdAt).toDateString() : ''}</td>
               </tr>
             );
           })}
