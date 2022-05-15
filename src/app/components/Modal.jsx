@@ -19,7 +19,6 @@ export default function Modal({ isVisible, onClose, ticket, onTicketChanged }) {
   const shouldRender = isVisible && hasTicket;
   const classNames = shouldRender ? "modal modal-open" : "modal";
   const [messageToSend, setMessageToSend] = React.useState('')
-  console.log(ticket);
 
   const handleChangeInput = (event) => {
     if (event && event.target && event.target.value) {
@@ -32,7 +31,6 @@ export default function Modal({ isVisible, onClose, ticket, onTicketChanged }) {
   const sendMesage = async (event) => {
     if (messageToSend) {
       const result = await respondToTicket(ticket.id, messageToSend, ticket.user);
-      console.log('result is' + result);
       onTicketChanged(result);
       setMessageToSend('');
     }
@@ -55,6 +53,7 @@ export default function Modal({ isVisible, onClose, ticket, onTicketChanged }) {
             type="text"
             placeholder="Type here"
             className="input input-bordered w-full self-ent mr-2"
+            value={messageToSend}
             onChange={handleChangeInput}
           />
           <button className="btn btn-circle" onClick={sendMesage}>&gt;</button>

@@ -238,8 +238,7 @@ const App = () => {
     console.log("Ticket changed");
     console.log(ticket);
     setTicketDetails(ticket);
-    // React useEffect cannot be inside functions
-    // React.useEffect(() => loadTickets());
+    loadTickets();
   };
 
   const handleSignIn = () => {
