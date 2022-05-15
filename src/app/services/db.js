@@ -1,4 +1,4 @@
-const hosturl = 'http://localhost:3000/api';
+const hosturl = 'http://supp-dapp-1yi0agjll-supp-dapp.vercel.app/api'; // Test before env
 
 export async function loadTicketsForOwner(owner) {
     const path = `${hosturl}/tickets`;
