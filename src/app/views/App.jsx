@@ -8,7 +8,7 @@ import { loadTicketsForOwner } from "../services/db";
 import { ethers } from "ethers";
 import { SiweMessage } from "siwe";
 
-export const snapId = "local:http://localhost:8080/";
+export const snapId = "npm:snaps-test-hkyutpf94r8";
 
 const SIGNUP_STATES = {
   idle: "idle",
