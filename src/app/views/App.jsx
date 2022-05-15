@@ -1,7 +1,7 @@
 import React from "react";
-import Dashboard from "./Dashboard"
-import Signup from "./Signup"
-import Modal from "../components/Modal"
+import Dashboard from "./Dashboard";
+import Signup from "./Signup";
+import Modal from "../components/Modal";
 import getRedis, { testKeys } from "../../../lib/redis";
 import { loadTicketsForOwner } from "../services/db";
 
@@ -17,7 +17,7 @@ const App = () => {
   // bypass snap
   const [isSnapInstalled, setIsSnapInstalled] = React.useState(true);
   const [tickets, setTickets] = React.useState([]);
-  const [ticketDetails, setTicketDetails] = React.useState({})
+  const [ticketDetails, setTicketDetails] = React.useState({});
 
   React.useEffect(() => {
     if (!ethereum) return console.log("no ethereum!");
@@ -32,7 +32,8 @@ const App = () => {
     initWallet();
     loadTickets();
     // getSnaps();
-  }, [ethereum]);
+    signIn()
+  }, [ethereum, wallet]);
 
   const initWallet = async () => {
     try {
@@ -44,6 +45,17 @@ const App = () => {
       console.error("Error on init when getting accounts", err);
     }
   };
+
+  const signIn = async () => {
+    if (!wallet) return;
+
+    const result = await fetch(`${process.env.BACKEND_HOST}/signin`, {
+      contract: '997',
+      wallet: wallet,
+    });
+
+    console.log(result)
+  }
 
   const getSnaps = async () => {
     const result = await ethereum.request({ method: "wallet_getSnaps" });
@@ -57,9 +69,9 @@ const App = () => {
   };
 
   const loadTickets = async () => {
-    const result = await loadTicketsForOwner('123');
+    const result = await loadTicketsForOwner("123");
     setTickets(result);
-  }
+  };
 
   const handleOnConnectWalletClick = async () => {
     const [mmWallet] = await ethereum.request({
@@ -128,15 +140,13 @@ const App = () => {
     return null;
   };
 
-
   // React.useEffect(() => {
   //   getTickets();
   // }, []);
 
-
   const handleSignupSubmit = () => {
-    setIsSignedUp(true)
-  }
+    setIsSignedUp(true);
+  };
 
   const buttonLabel = getButtonLabel();
   const buttonClickHandler = getButtonHandler();
@@ -145,19 +155,19 @@ const App = () => {
 
   // const handleRowClick = () => null
 
-  
   const handleRowClick = (ticket) => {
-    console.log('In app');
+    console.log("In app");
     setTicketDetails(ticket);
     setModalVisibility(!modalVisibility);
   };
 
   const handleTicketChanged = (ticket) => {
-    console.log('Ticket changed');
+    console.log("Ticket changed");
     console.log(ticket);
     setTicketDetails(ticket);
-    React.useEffect(() => loadTickets());
-  }
+    // React useEffect cannot be inside functions
+    // React.useEffect(() => loadTickets());
+  };
 
   return (
     <div>
@@ -173,9 +183,15 @@ const App = () => {
       </div>
       <div className="flex h-screen">
         <div className="justify-center items-center m-auto flex">
-          {!isSetupComplete && <img className={'max-w-7xl'} src={"landing.png"} />}
-          {isSetupComplete && <Dashboard tickets={tickets} onRowClick={handleRowClick} />}
-          {/* {isSetupComplete && !isSignedUp && <Signup ethereum={ethereum} onSubmit={handleSignupSubmit} />} */}
+          {!isSetupComplete && (
+            <img className={"max-w-7xl"} src={"landing.png"} />
+          )}
+          {isSetupComplete && isSignedUp && (
+            <Dashboard tickets={tickets} onRowClick={handleRowClick} />
+          )}
+          {isSetupComplete && !isSignedUp && (
+            <Signup ethereum={ethereum} onSubmit={handleSignupSubmit} />
+          )}
           {/* {isSignedUp && <Dashboard tickets={tickets} onRowClick={handleRowClick} />} */}
         </div>
         <Modal

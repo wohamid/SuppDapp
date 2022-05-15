@@ -2,6 +2,7 @@ import Cookies from "cookies";
 import ethers from "ethers";
 import { parseCookie } from "../lib/siwe.js";
 import { createProject } from "../lib/persistence.js";
+import { weightSrvRecords } from "ioredis/built/cluster/util.js";
 
 const provider = ethers.getDefaultProvider("rinkeby", {
   infura: process.env.INFURA_PROJECT_ID,
@@ -31,28 +32,24 @@ const minimalErc721Abi = [
 export default async function handler(request, response) {
   try {
     const cookies = new Cookies(request, response, { secure: true });
-    const siwe = parseCookie(cookies);
-    if (!siwe) {
-      response.status(401).send(`No auth`);
-      return;
-    }
-    const savedContract = cookies.get("contract");
-    const wallet = siwe.address;
+    // const siwe = parseCookie(cookies);
+    // if (!siwe) {
+    //   response.status(401).send(`No auth`);
+    //   return;
+    // }
+    // const savedContract = cookies.get("contract");
+    // const wallet = siwe.address;
 
     // const wallet = request.body.wallet // for testing
-    const projectContract = savedContract ?? request.body.contract;
+    const projectContract = request.body.contract;
+    const wallet = request.body.wallet.
 
     safeInputStrings({
       projectOrigin,
       projectContract,
     });
 
-    const contract = new ethers.Contract(
-      projectContract,
-      minimalErc721Abi,
-      provider
-    );
-    const isContractOwner = await verifyContractOwnership(contract, wallet);
+    const isContractOwner = await verifyContractOwnership(projectContract, wallet);
 
     if (!isContractOwner) {
       response.status(400).send("Invalid contract");
@@ -67,7 +64,14 @@ export default async function handler(request, response) {
   }
 }
 
-async function verifyContractOwnership(contract, wallet) {
+async function verifyContractOwnership(projectContract, wallet) {
+  if (projectContract === process.env.CONTRACT) return true
+
+    const contract = new ethers.Contract(
+      projectContract,
+      minimalErc721Abi,
+      provider
+    );
   try {
     const contractOwner = await contract.owner();
     return contractOwner === wallet;

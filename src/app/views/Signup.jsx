@@ -1,5 +1,4 @@
 import React from "react";
-import { snapId } from "./App";
 
 const INPUTS = {
   nickname: "nickname",
@@ -8,7 +7,7 @@ const INPUTS = {
   contractAddress: "contractAddress",
 };
 
-const Signup = ({ ethereum, onSubmit }) => {
+const Signup = ({ onSubmit }) => {
   const [nickname, setNickname] = React.useState("");
   const [projectName, setprojectName] = React.useState("");
   const [projectUrl, setprojectUrl] = React.useState("");
@@ -53,7 +52,7 @@ const Signup = ({ ethereum, onSubmit }) => {
     //   ],
     // });
     console.log(object);
-    onSubmit()
+    onSubmit(object)
   };
 
   return (
