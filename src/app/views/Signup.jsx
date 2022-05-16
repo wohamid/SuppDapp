@@ -58,17 +58,17 @@ const Signup = ({ onFinish }) => {
 
   return (
       <div className="container flex flex-col justify-center items-center">
-        {Boolean(script) ? (
-          <div style={{ maxWidth: '100%' }}>
-          <CodeSnippet
+        {script ? (
+          <>
+            <CodeSnippet
             code={script}
             onDoneClick={onFinish}
           />
           <button onClick={verifyProject}>Verify</button>
-      </div>
+          </>
         ): (
           <>
-           <div className="form-control">
+          <div className="form-control">
           <form onSubmit={handleSubmit}>
             <div className="m-5">
               <label className="label">
@@ -137,7 +137,6 @@ const Signup = ({ onFinish }) => {
         </button>
           </>
         )}
-        <button onClick={onFinish}>Finish</button>
       </div>
   );
 };
