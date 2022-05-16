@@ -78,7 +78,7 @@ const Signup = ({ onFinish }) => {
               <label className="input-group">
                 <input
                   type="text"
-                  placeholder="e.g. Napoleon"
+                  placeholder="Type here"
                   className="input input-bordered"
                   name={INPUTS.nickname}
                   value={nickname}
@@ -93,7 +93,7 @@ const Signup = ({ onFinish }) => {
               <label className="input-group">
                 <input
                   type="text"
-                  placeholder="e.g. BAYC"
+                  placeholder="Type here"
                   className="input input-bordered"
                   name={INPUTS.projectName}
                   value={projectName}
@@ -108,7 +108,7 @@ const Signup = ({ onFinish }) => {
               <label className="input-group">
                 <input
                   type="text"
-                  placeholder="https://..."
+                  placeholder="Type here"
                   className="input input-bordered"
                   name={INPUTS.projectUrl}
                   value={projectUrl}
@@ -123,7 +123,7 @@ const Signup = ({ onFinish }) => {
               <label className="input-group">
                 <input
                   type="text"
-                  placeholder="0x..."
+                  placeholder="Type here"
                   className="input input-bordered"
                   name={INPUTS.contractAddress}
                   value={contractAddress}

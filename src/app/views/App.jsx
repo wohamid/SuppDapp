@@ -6,6 +6,8 @@ import Modal from "../components/Modal"
 import { loadTicketsForOwner } from "../services/db";
 import useSiwe from '../hooks/useSiwe';
 
+const BACKEND_ADDR = window.location.origin;
+
 const SIGNUP_STATES = {
   idle: "idle",
   signInContractInput: "signInContractInput",
@@ -26,6 +28,7 @@ const App = () => {
   const [contractAddressInputValue, setContractAddressInputValue] =
     React.useState("");
   const [tickets, setTickets] = React.useState([]);
+  const [ticketIdOpened, setTicketIdOpened] = React.useState("");
   const [ticketDetails, setTicketDetails] = React.useState({});
   const [error, setError] = React.useState();
   const [signupState, setSignUpState] = React.useState(SIGNUP_STATES.idle);
@@ -57,21 +60,21 @@ const App = () => {
   };
 
   const signOut = async () => {
-    fetch(`${process.env.BACKEND_HOST}/signout`);
+    const path = new URL("/api/signout", BACKEND_ADDR).href;
+    fetch(path);
     return;
   };
 
   const signIn = async (contractAddress) => {
     if (!wallet) return false;
-    console.log(process.env.BACKEND_HOST);
 
     const urlParams = contractAddress
       ? `contract=${contractAddress}&wallet=${wallet}`
       : `wallet=${wallet}`;
 
-    const result = await fetch(
-      `${process.env.BACKEND_HOST}/signin?${urlParams}`
-    );
+    const path = new URL(`/api/signin?${urlParams}`, BACKEND_ADDR).href;
+    const result = await fetch(path);
+
 
     if (result.ok) {
       const contract = await result.json();
@@ -83,7 +86,7 @@ const App = () => {
   };
 
   const loadTickets = async () => {
-    const result = await loadTicketsForOwner();
+    const result = await loadTicketsForOwner(contractLoggedIn);
     setTickets(result);
   };
 
@@ -127,9 +130,10 @@ const App = () => {
 
   // const handleRowClick = () => null
 
-  const handleRowClick = (ticket) => {
+  const handleRowClick = (ticketId) => {
     console.log("In app");
-    setTicketDetails(ticket);
+    setTicketIdOpened(ticketId);
+    // setTicketDetails(ticket);
     setModalVisibility(!modalVisibility);
   };
 
@@ -219,7 +223,11 @@ const App = () => {
               <Signup onFinish={() => {setSignUpState(SIGNUP_STATES.idle)}} />
             )}
           {wallet && isSignedIn && signupState === SIGNUP_STATES.idle && (
-            <Dashboard tickets={tickets} onRowClick={handleRowClick} />
+            <Dashboard
+              tickets={tickets}
+              onRowClick={handleRowClick}
+              onTicketUpdate={loadTickets}
+            />
           )}
           {error && (
             <div className="alert alert-error shadow-lg my-20">
@@ -241,13 +249,13 @@ const App = () => {
               </div>
             </div>
           )}
-          {/* {isSignedUp && <Dashboard tickets={tickets} onRowClick={handleRowClick} />} */}
         </div>
         <Modal
+          contractAddress={contractLoggedIn}
           isVisible={modalVisibility}
           onClose={handleCloseModal}
-          ticket={ticketDetails}
-          onTicketChanged={handleTicketChanged}
+          tickets={tickets}
+          selectedTicketId={ticketIdOpened}
         />
       </div>
     </div>
