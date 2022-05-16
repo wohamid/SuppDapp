@@ -1,7 +1,9 @@
-const hosturl = process.env.BACKEND_HOST;
+const hosturl = window.location.origin;
 
-export async function loadTicketsForOwner() {
-    const path = `${hosturl}/tickets`;
+export async function loadTicketsForOwner(owner) {
+    
+    console.log(hosturl);
+    const path = new URL(`/api/tickets?owner=${owner}`, hosturl).href;
 
     const test = await fetch(path);
     const parsed = await test.json();
@@ -9,8 +11,8 @@ export async function loadTicketsForOwner() {
     return parsed;
 }
 
-export async function respondToTicket(ticketId, message, user) {
-  const path = `${hosturl}/tickets`;
+export async function respondToTicket(owner, ticketId, message, user) {
+    const path = new URL(`/api/tickets`, hosturl).href;
   try {
     const res = await fetch(path, {
       method: 'POST',
@@ -18,7 +20,8 @@ export async function respondToTicket(ticketId, message, user) {
       body: JSON.stringify({
         ticketId,
         message,
-        user
+        user,
+        owner
       })
     });
 
