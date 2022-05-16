@@ -62,10 +62,12 @@ export default async function handler(request, response) {
       response.status(200).json(projectContract);
       return;
     } catch (err) {
-      response.status(500).send();
+      console.error(err)
+      response.status(500).send(err.message);
     }
   } catch (err) {
-    response.status(500).send();
+    console.error(err)
+    response.status(500).send(err.message);
   }
 }
 
