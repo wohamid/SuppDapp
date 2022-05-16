@@ -1,38 +1,37 @@
 import React from "react";
-import Dashboard from "./Dashboard";
-import Signup from "./Signup";
-import Modal from "../components/Modal";
-import CodeSnippet from "../components/CodeSnippet";
-import getRedis, { testKeys } from "../../../lib/redis";
+import { ethers } from 'ethers';
+import Dashboard from "./Dashboard"
+import Signup from "./Signup"
+import Modal from "../components/Modal"
 import { loadTicketsForOwner } from "../services/db";
-import { ethers } from "ethers";
-import { SiweMessage } from "siwe";
+import useSiwe from '../hooks/useSiwe';
+import { BACKEND_ADDR } from '../constants/app';
 
-// export const snapId = "npm:snaps-test-hkyutpf94r8";
-
-const BACKEND_ADDR = window.location.origin;
 
 const SIGNUP_STATES = {
   idle: "idle",
   signInContractInput: "signInContractInput",
   signupForm: "signupForm",
-  codeGenerated: "codeGenerated",
 };
 
 const App = () => {
   const { ethereum } = window;
+  const provider = React.useMemo(() => ethereum ? new ethers.providers.Web3Provider(window.ethereum): undefined, [ethereum])
+  const signer = React.useMemo(() => provider && provider.getSigner(), [])
 
   const [wallet, setWallet] = React.useState();
   const [modalVisibility, setModalVisibility] = React.useState(false);
+
+  useSiwe(wallet, signer);
+
   const [contractLoggedIn, setContractLoggedIn] = React.useState(null);
   const [contractAddressInputValue, setContractAddressInputValue] =
     React.useState("");
-  const [signupState, setSignUpState] = React.useState(SIGNUP_STATES.idle);
   const [tickets, setTickets] = React.useState([]);
   const [ticketIdOpened, setTicketIdOpened] = React.useState("");
   const [ticketDetails, setTicketDetails] = React.useState({});
-  const [generatedCode, setGeneratedCode] = React.useState({});
   const [error, setError] = React.useState();
+  const [signupState, setSignUpState] = React.useState(SIGNUP_STATES.idle);
 
   React.useEffect(() => {
     if (!ethereum) return console.log("no ethereum!");
@@ -46,59 +45,7 @@ const App = () => {
     });
     initWallet();
     loadTickets();
-    // getSnaps();
   }, [ethereum]);
-
-  React.useEffect(() => {
-    if (!wallet) return;
-
-    signIn();
-  }, [wallet]);
-
-  const createSiweMessage = async (address, statement) => {
-    const path = new URL("/api/siwe", BACKEND_ADDR).href;
-    console.log(path);
-    const res = await fetch(path, {
-      credentials: "include",
-    });
-    const message = new SiweMessage({
-      domain: window.location.host,
-      address,
-      statement,
-      uri: origin,
-      version: "1",
-      chainId: "1",
-      nonce: await res.text(),
-    });
-    return message.prepareMessage();
-  };
-
-  const setupAuth = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = await provider.send("eth_requestAccounts", []).then(
-      () => provider.getSigner(),
-      () => console.log("user rejected request")
-    );
-    const message = await createSiweMessage(
-      await signer.getAddress(),
-      "Sign in with your wallet"
-    );
-    const signature = await signer.signMessage(message);
-
-    const path = new URL("/api/siwe", BACKEND_ADDR).href;
-    const res = await fetch(path, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ message, signature }),
-      credentials: "include",
-    });
-    if (res.status === 200) {
-      console.log("siwe success");
-    }
-    console.log(await res.text());
-  };
 
   const initWallet = async () => {
     try {
@@ -106,13 +53,14 @@ const App = () => {
         method: "eth_accounts",
       });
       setWallet(newAccount);
+
     } catch (err) {
       console.error("Error on init when getting accounts", err);
     }
   };
 
   const signOut = async () => {
-    const path = new URL("/api/signout", BACKEND_ADDR).href;
+    const path = new URL("/signout", BACKEND_ADDR).href;
     fetch(path);
     return;
   };
@@ -149,9 +97,8 @@ const App = () => {
 
     console.log(mmWallet);
 
-    setupAuth();
-
     setWallet(mmWallet);
+
   };
 
   const handleCloseModal = () => {
@@ -179,52 +126,6 @@ const App = () => {
     content: "Hi, how can I help you",
   };
 
-  const handleSignupSubmit = async (projectDetails) => {
-    const { contractAddress, projectUrl, projectName } = projectDetails;
-    // create project by calling the create endpoint
-    const createPath = new URL(`/api/create`, BACKEND_ADDR).href;
-    const createProjectResult = await fetch(createPath, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        origin: projectUrl,
-        contract: contractAddress,
-        name: projectName,
-      }),
-    });
-    if (!createProjectResult.ok) {
-      const createProjectError = await createProjectResult.text();
-      setError(createProjectError);
-      return;
-    }
-    setError("");
-    console.log(createProjectResult);
-    // if all goes ok, then set the state to display the code and signIn with the provided contract
-    const isSignedInSuccessfully = await signIn(contractAddress);
-    if (!isSignedInSuccessfully) {
-      setError(`Cannot Sign with with contract address ${contractAddress}`);
-      return;
-    }
-    setError("");
-
-    // fetch generate2
-    const generatePath = new URL(
-      `/api/generate2?address=${contractAddress}&projectName=${projectName}&page=${projectUrl}`,
-      BACKEND_ADDR
-    ).href;
-    const generatedCodeResult = await fetch(generatePath);
-    console.log(generatedCodeResult);
-    if (generatedCodeResult.ok) {
-      const codeSnippet = await generatedCodeResult.text();
-      console.log(codeSnippet);
-      console.log("code generated");
-      setGeneratedCode(codeSnippet);
-      setSignUpState(SIGNUP_STATES.codeGenerated);
-    }
-  };
-
   const buttonLabel = wallet ?? "Connect Metamask";
 
   // const handleRowClick = () => null
@@ -246,9 +147,6 @@ const App = () => {
   const handleSignIn = () => {
     setSignUpState(SIGNUP_STATES.signInContractInput);
   };
-  const handleSignUp = () => {
-    setSignUpState(SIGNUP_STATES.signupForm);
-  };
 
   const handleContractAddressValueChange = (event) => {
     const {
@@ -260,10 +158,6 @@ const App = () => {
   const handleContractAddressInputSubmit = async () => {
     const isSignedIn = await signIn(contractAddressInputValue);
     if (isSignedIn) setSignUpState(SIGNUP_STATES.idle);
-  };
-
-  const handleCodeGenerationDoneClick = () => {
-    setSignUpState(SIGNUP_STATES.idle);
   };
 
   const isSignedIn = contractLoggedIn;
@@ -284,12 +178,6 @@ const App = () => {
         </div>
       </div>
       <div className="flex h-screen">
-        {wallet && signupState === SIGNUP_STATES.codeGenerated && (
-          <CodeSnippet
-            code={generatedCode}
-            onDoneClick={handleCodeGenerationDoneClick}
-          />
-        )}
         <div className="justify-center items-center m-auto flex flex-col">
           {!wallet && <img className={"max-w-7xl"} src={"landing.png"} />}
           {wallet && !isSignedIn && signupState === SIGNUP_STATES.idle && (
@@ -297,7 +185,7 @@ const App = () => {
               <button className="btn btn-primary m-10" onClick={handleSignIn}>
                 Sign in
               </button>
-              <button className="btn btn-primary m-10" onClick={handleSignUp}>
+              <button className="btn btn-primary m-10" onClick={() => {setSignUpState(SIGNUP_STATES.signupForm)}}>
                 Sign up
               </button>
             </div>
@@ -332,7 +220,7 @@ const App = () => {
           {wallet &&
             !isSignedIn &&
             signupState === SIGNUP_STATES.signupForm && (
-              <Signup onSubmit={handleSignupSubmit} />
+              <Signup onFinish={() => {setSignUpState(SIGNUP_STATES.idle)}} />
             )}
           {wallet && isSignedIn && signupState === SIGNUP_STATES.idle && (
             <Dashboard
@@ -373,5 +261,6 @@ const App = () => {
     </div>
   );
 };
+
 
 export default App;

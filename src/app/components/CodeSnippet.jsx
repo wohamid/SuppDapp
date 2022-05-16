@@ -1,4 +1,4 @@
-const CodeSnippet = ({ code, onDoneClick }) => {
+const CodeSnippet = ({ code, onButtonClick, buttonText }) => {
   return !code ? null : (
     <div className="hero rounded w-full">
       <div className="hero-content text-center">
@@ -10,8 +10,8 @@ const CodeSnippet = ({ code, onDoneClick }) => {
           <div class="mockup-code p-5">
             <code>{code}</code>
           </div>
-          <button className="btn btn-primary my-10" onClick={onDoneClick}>
-            Close
+          <button className="btn btn-primary my-10" onClick={onButtonClick}>
+            {buttonText}
           </button>
         </div>
       </div>

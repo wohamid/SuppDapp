@@ -1,7 +1,6 @@
 import Cookies from 'cookies'
 import fetch from 'node-fetch';
 import { parseCookie } from '../lib/siwe.js';
-import { createKey } from '../lib/scriptHelper.js';
 import { getProjectByContract, verifyProject } from '../lib/persistence.js';
 
 /**
@@ -33,12 +32,10 @@ export default async function handler(
 
     const siteUrl = projectInfo.origin;
 
-    const scriptKey = createKey(contract, siteUrl);
-
     const r = await fetch(siteUrl);
     const body = await r.text(); // might be better to do this as a stream if this app were real
 
-  if (body.includes(scriptKey)) {
+  if (body.includes(projectInfo.key)) {
     const result = await verifyProject(contract);
     response.status(200).json(result)
   } else {

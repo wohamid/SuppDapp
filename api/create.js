@@ -1,7 +1,8 @@
-import Cookies from "cookies";
-import ethers from "ethers";
-import { parseCookie } from "../lib/siwe.js";
-import { createProject } from "../lib/persistence.js";
+import Cookies from 'cookies'
+import ethers from 'ethers';
+import { parseCookie } from '../lib/siwe.js';
+import { createProject } from '../lib/persistence.js';
+import { createKey } from '../lib/scriptHelper.js';
 
 export const DUMMY_CONTRACTS = ["997", "007", "0x123", "0x12345", "0x999"];
 
@@ -45,6 +46,8 @@ export default async function handler(request, response) {
     const projectContract = request.body.contract;
     const projectName = request.body.name;
 
+    const key = createKey(projectContract, projectOrigin);
+
     safeInputStrings({
       projectOrigin,
       projectContract,
@@ -77,6 +80,7 @@ export default async function handler(request, response) {
       name: projectName,
       owner: wallet,
       origin: projectOrigin,
+      key,
     });
 
     response.status(201).json(project);

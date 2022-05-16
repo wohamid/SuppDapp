@@ -1,6 +1,4 @@
-import ssri from 'ssri';
-import fs from 'fs';
-import { encryptObj } from '../lib/crypt.js';
+import { getProjectByContract } from '../lib/persistence.js';
 
 /**
  * 
@@ -11,20 +9,24 @@ export default async function handler(
   request,
   response
 ) {
-  const selfURL = `https://${request.headers.host}/`
-  const key = Buffer.from(process.env.CIPHER_SECRET, 'hex')
+  const host = request.headers.host;
+  const selfURL = `http://${host.includes('127.0.0.') ? `${request.headers['x-forwarded-host']}` : host}/`
+  
   const address = request.query.address
-  const projectName = request.query.projectName
-  const page = new URL(request.query.page).origin;
+  const projectInfo = await getProjectByContract(address);
 
-  console.log(`generating script for ${projectName}`)
+  if (!projectInfo) {
+    response.status(404).send();
+    return;
+  }
+
+
+  // const projectName = request.query.projectName
+  // const page = new URL(request.query.page).origin;
+
+  console.log(`generating script for ${projectInfo.name}`)
 
   try {
-    safeInputStrings({
-      address, projectName, page
-    })
-
-    const encryptedConfig = encryptObj(key, { address: address, page });
 
     // const integrityHash = (await ssri.fromStream(fs.createReadStream('./public/script.js'), {
     //   algorithms: ['sha384']
@@ -33,27 +35,19 @@ export default async function handler(
     const integrity = ``;
 
     const scriptSrc = new URL('/script.js', selfURL).href;
+    console.log('scriptSrc', scriptSrc);
 
 
     const script = `
 <script crossorigin="anonymous" src="${scriptSrc}" ${integrity}></script>
-<supp-dapp project="${projectName}" key="${encryptedConfig}" host="${selfURL}"></supp-dapp>`
+<supp-dapp project="${projectInfo.name}" key="${projectInfo.key}" host="${selfURL}"></supp-dapp>`
+console.log('script', script);
 
     response.setHeader('content-type', 'text/plain');
     response.send(script);
   } catch (err) {
+    console.error(err);
     response.status(500).send(err.message)
   }
 
-}
-
-function safeInputStrings(inputs) {
-  Object.entries(inputs).map(([k, v]) => {
-    if (!v) {
-      throw Error(`Expected param: '${k}'`)
-    }
-    if (v.match(/['"<>]/)) {
-      throw Error(`Please avoid using '"<> characters in '${k}'`)
-    }
-  })
 }
