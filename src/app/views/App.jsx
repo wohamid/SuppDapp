@@ -5,8 +5,8 @@ import Signup from "./Signup"
 import Modal from "../components/Modal"
 import { loadTicketsForOwner } from "../services/db";
 import useSiwe from '../hooks/useSiwe';
+import { BACKEND_ADDR } from '../constants/app';
 
-const BACKEND_ADDR = window.location.origin;
 
 const SIGNUP_STATES = {
   idle: "idle",
@@ -60,7 +60,7 @@ const App = () => {
   };
 
   const signOut = async () => {
-    const path = new URL("/api/signout", BACKEND_ADDR).href;
+    const path = new URL("/signout", BACKEND_ADDR).href;
     fetch(path);
     return;
   };
