@@ -196,6 +196,7 @@ const App = () => {
       setError(createProjectError);
       return;
     }
+    setError('');
     console.log(createProjectResult);
     // if all goes ok, then set the state to display the code and signIn with the provided contract
     const isSignedInSuccessfully = await signIn(contractAddress);
@@ -203,6 +204,7 @@ const App = () => {
       setError(`Cannot Sign with with contract address ${contractAddress}`);
       return;
     }
+    setError('');
 
     // fetch generate2
     const generatedCodeResult = await fetch(

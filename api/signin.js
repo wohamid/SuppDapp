@@ -1,6 +1,7 @@
 import Cookies from "cookies";
 import ethers from "ethers";
 import { parseCookie } from "../lib/siwe.js";
+import { DUMMY_CONTRACTS } from "./create.js";
 // import { createProject } from "../lib/persistence.js";
 // import { weightSrvRecords } from "ioredis/built/cluster/util.js";
 
@@ -38,7 +39,7 @@ export default async function handler(request, response) {
     //   return;
     // }
     // const wallet = siwe.address;
-    const wallet = request.query.wallet
+    const wallet = request.query.wallet;
 
     const savedContract = cookies.get("contract");
 
@@ -69,9 +70,11 @@ export default async function handler(request, response) {
 }
 
 async function verifyContractOwnership(projectContract, wallet) {
-  // fake project for demo purposes
-  return true;
-  if (projectContract === process.env.CONTRACT) return true;
+  // We want dummy contracts to bypass security to allow demoing
+  const shouldContractBypassSecurity =
+    DUMMY_CONTRACTS.includes(projectContract);
+
+  if (shouldContractBypassSecurity) return true;
 
   const contract = new ethers.Contract(
     projectContract,

@@ -8,12 +8,12 @@ const Dash = ({ tickets, onRowClick, onTicketUpdate }) => {
     onRowClick(ticketId);
   };
 
-  const updateTickets = React.useMemo(
-    () => setTimeout(onTicketUpdate, 5000),
-    [onTicketUpdate]
-  );
+  const updateTickets = React.useCallback(() => setTimeout(onTicketUpdate, 3000), [
+    onTicketUpdate,
+  ]);
 
   React.useEffect(() => {
+    console.log("why");
     updateTickets();
   });
 
