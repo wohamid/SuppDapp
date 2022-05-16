@@ -3,6 +3,9 @@ import { decryptObj } from '../lib/crypt.js';
 import { allowCors } from '../lib/corsHelper.js';
 import { getTicketsBetween, appendMessage } from '../lib/persistence.js';
 
+function normalize (url) {
+    return new URL('/',url).href
+}
 
 /**
  * 
@@ -36,7 +39,7 @@ export default allowCors(async function handler(
 
     // There's no way for the page to lie about origin AFAIR, so this is a valid check
     // if origin is falsy, it's either not a cross-origin request (local testing) or it'd fail on establishing CORS
-    if(origin && origin !== project.page) {
+    if(origin && normalize(origin) !== normalize(project.page)) {
         throw Error(`This is not this project's page`)
     }
     console.log(project, info, request.body)
