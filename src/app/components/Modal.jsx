@@ -61,7 +61,7 @@ export default function Modal({
         </label>
         <h3 className="font-bold text-lg">{ticket?.title}</h3>
         <p className="py-4">{ticket?.description}</p>
-        <MessageList messages={ticket?.messages} />
+        <MessageList messages={ticket?.messages} owner={contractAddress} />
         <div className="flex items-center mt-5">
           <input
             type="text"

@@ -44,6 +44,7 @@ export default allowCors(async function handler(request, response) {
     const result = await appendMessage(
       body.owner,
       body.user,
+      body.owner,
       body.ticketId,
       body.message
     );
