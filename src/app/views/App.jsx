@@ -10,6 +10,8 @@ import { SiweMessage } from "siwe";
 
 // export const snapId = "npm:snaps-test-hkyutpf94r8";
 
+const BACKEND_ADDR = window.location.origin;
+
 const SIGNUP_STATES = {
   idle: "idle",
   signInContractInput: "signInContractInput",
@@ -27,7 +29,7 @@ const App = () => {
     React.useState("");
   const [signupState, setSignUpState] = React.useState(SIGNUP_STATES.idle);
   const [tickets, setTickets] = React.useState([]);
-  const [ticketIdOpened, setTicketIdOpened] = React.useState('')
+  const [ticketIdOpened, setTicketIdOpened] = React.useState("");
   const [ticketDetails, setTicketDetails] = React.useState({});
   const [generatedCode, setGeneratedCode] = React.useState({});
   const [error, setError] = React.useState();
@@ -54,7 +56,9 @@ const App = () => {
   }, [wallet]);
 
   const createSiweMessage = async (address, statement) => {
-    const res = await fetch(`${process.env.BACKEND_HOST}/siwe`, {
+    const path = new URL("/api/siwe", BACKEND_ADDR).href;
+    console.log(path);
+    const res = await fetch(path, {
       credentials: "include",
     });
     const message = new SiweMessage({
@@ -81,7 +85,8 @@ const App = () => {
     );
     const signature = await signer.signMessage(message);
 
-    const res = await fetch(`${process.env.BACKEND_HOST}/siwe`, {
+    const path = new URL("/api/siwe", BACKEND_ADDR).href;
+    const res = await fetch(path, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -107,21 +112,20 @@ const App = () => {
   };
 
   const signOut = async () => {
-    fetch(`${process.env.BACKEND_HOST}/signout`);
+    const path = new URL("/api/signout", BACKEND_ADDR).href;
+    fetch(path);
     return;
   };
 
   const signIn = async (contractAddress) => {
     if (!wallet) return false;
-    console.log(process.env.BACKEND_HOST);
 
     const urlParams = contractAddress
       ? `contract=${contractAddress}&wallet=${wallet}`
       : `wallet=${wallet}`;
 
-    const result = await fetch(
-      `${process.env.BACKEND_HOST}/signin?${urlParams}`
-    );
+    const path = new URL(`/api/signin=${urlParams}`, BACKEND_ADDR).href;
+    const result = await fetch(path);
 
 
     if (result.ok) {
@@ -178,26 +182,24 @@ const App = () => {
   const handleSignupSubmit = async (projectDetails) => {
     const { contractAddress, projectUrl, projectName } = projectDetails;
     // create project by calling the create endpoint
-    const createProjectResult = await fetch(
-      `${process.env.BACKEND_HOST}/create`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          origin: "cypherpunk consensys hackathon",
-          contract: contractAddress,
-          name: projectName,
-        }),
-      }
-    );
+    const createPath = new URL(`/api/create`, BACKEND_ADDR).href;
+    const createProjectResult = await fetch(createPath, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        origin: "cypherpunk consensys hackathon",
+        contract: contractAddress,
+        name: projectName,
+      }),
+    });
     if (!createProjectResult.ok) {
       const createProjectError = await createProjectResult.text();
       setError(createProjectError);
       return;
     }
-    setError('');
+    setError("");
     console.log(createProjectResult);
     // if all goes ok, then set the state to display the code and signIn with the provided contract
     const isSignedInSuccessfully = await signIn(contractAddress);
@@ -205,12 +207,14 @@ const App = () => {
       setError(`Cannot Sign with with contract address ${contractAddress}`);
       return;
     }
-    setError('');
+    setError("");
 
     // fetch generate2
-    const generatedCodeResult = await fetch(
-      `${process.env.BACKEND_HOST}/generate2?address=${contractAddress}&projectName=${projectName}&page=${projectUrl}`
-    );
+    const generatePath = new URL(
+      `/api/generate2?address=${contractAddress}&projectName=${projectName}&page=${projectUrl}`,
+      BACKEND_ADDR
+    ).href;
+    const generatedCodeResult = await fetch(generatePath);
     console.log(generatedCodeResult);
     if (generatedCodeResult.ok) {
       const codeSnippet = await generatedCodeResult.text();
@@ -227,7 +231,7 @@ const App = () => {
 
   const handleRowClick = (ticketId) => {
     console.log("In app");
-    setTicketIdOpened(ticketId)
+    setTicketIdOpened(ticketId);
     // setTicketDetails(ticket);
     setModalVisibility(!modalVisibility);
   };
@@ -280,13 +284,12 @@ const App = () => {
         </div>
       </div>
       <div className="flex h-screen">
-        {wallet &&
-          signupState === SIGNUP_STATES.codeGenerated && (
-            <CodeSnippet
-              code={generatedCode}
-              onDoneClick={handleCodeGenerationDoneClick}
-            />
-          )}
+        {wallet && signupState === SIGNUP_STATES.codeGenerated && (
+          <CodeSnippet
+            code={generatedCode}
+            onDoneClick={handleCodeGenerationDoneClick}
+          />
+        )}
         <div className="justify-center items-center m-auto flex flex-col">
           {!wallet && <img className={"max-w-7xl"} src={"landing.png"} />}
           {wallet && !isSignedIn && signupState === SIGNUP_STATES.idle && (
@@ -332,7 +335,11 @@ const App = () => {
               <Signup onSubmit={handleSignupSubmit} />
             )}
           {wallet && isSignedIn && signupState === SIGNUP_STATES.idle && (
-            <Dashboard tickets={tickets} onRowClick={handleRowClick} onTicketUpdate={loadTickets} />
+            <Dashboard
+              tickets={tickets}
+              onRowClick={handleRowClick}
+              onTicketUpdate={loadTickets}
+            />
           )}
           {error && (
             <div className="alert alert-error shadow-lg my-20">
@@ -366,6 +373,5 @@ const App = () => {
     </div>
   );
 };
-
 
 export default App;

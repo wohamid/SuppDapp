@@ -1,7 +1,8 @@
-const hosturl = process.env.BACKEND_HOST;
+const hosturl = window.location.origin;
 
 export async function loadTicketsForOwner(owner) {
     
+    console.log(hosturl);
     const path = new URL(`/api/tickets?owner=${owner}`, hosturl).href;
 
     const test = await fetch(path);
