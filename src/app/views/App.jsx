@@ -189,7 +189,7 @@ const App = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        origin: "cypherpunk consensys hackathon",
+        origin: projectUrl,
         contract: contractAddress,
         name: projectName,
       }),

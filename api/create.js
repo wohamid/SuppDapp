@@ -41,7 +41,7 @@ export default async function handler(request, response) {
     const wallet = siwe.address;
 
     // const wallet = request.body.wallet // for testing
-    const projectOrigin = request.body.origin;
+    const projectOrigin = new URL(request.body.origin).href;
     const projectContract = request.body.contract;
     const projectName = request.body.name;
 
@@ -82,7 +82,7 @@ export default async function handler(request, response) {
     response.status(201).json(project);
     return;
   } catch (err) {
-    response.status(500).send();
+    response.status(500).send(err);
   }
 }
 
