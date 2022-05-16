@@ -1,4 +1,5 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useCallback } from "react";
+import CodeSnippet from "../components/CodeSnippet";
 import { BACKEND_ADDR } from '../constants/app';
 
 const INPUTS = {
@@ -8,7 +9,7 @@ const INPUTS = {
   contractAddress: "contractAddress",
 };
 
-const Signup = ({ ethereum, onSubmit }) => {
+const Signup = ({ onFinish }) => {
   const [nickname, setNickname] = React.useState("");
   const [projectName, setprojectName] = React.useState("");
   const [projectUrl, setprojectUrl] = React.useState("");
@@ -53,28 +54,21 @@ const Signup = ({ ethereum, onSubmit }) => {
       projectUrl
     })
     setScript(generatedScript || '');
-
-    // const response = await ethereum.request({
-    //   method: "wallet_invokeSnap",
-    //   params: [
-    //     snapId,
-    //     {
-    //       method: "hello",
-    //       projectUrl,
-    //     },
-    //   ],
-    // });
-    // onSubmit()
   };
-
-  const onFinish = () => {
-    onSubmit();
-  }
 
   return (
       <div className="container flex flex-col justify-center items-center">
-        <div className="form-control">
-          <h6>Project info</h6>
+        {Boolean(script) ? (
+          <div style={{ maxWidth: '100%' }}>
+          <CodeSnippet
+            code={script}
+            onDoneClick={onFinish}
+          />
+          <button onClick={verifyProject}>Verify</button>
+      </div>
+        ): (
+          <>
+           <div className="form-control">
           <form onSubmit={handleSubmit}>
             <div className="m-5">
               <label className="label">
@@ -141,15 +135,7 @@ const Signup = ({ ethereum, onSubmit }) => {
         <button className="btn btn-primary " onClick={handleSubmit}>
           Create project
         </button>
-        {Boolean(script) && (
-          <div style={{ maxWidth: '100%' }}>
-            <h6>Script and verification</h6>
-            <p>Paste this script into your site then verify your site</p>
-            <div>
-              {`${script}`}
-            </div>
-            <button onClick={verifyProject}>Verify</button>
-        </div>
+          </>
         )}
         <button onClick={onFinish}>Finish</button>
       </div>

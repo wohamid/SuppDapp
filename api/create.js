@@ -55,17 +55,19 @@ export default async function handler(
       projectOrigin, projectContract
     })
 
-    const contract = new ethers.Contract(projectContract, minimalErc721Abi, provider);
-    try {
-      const contractOwner = await contract.owner();
-      if (contractOwner !== wallet) {
-        response.status(400).send('Invalid contract');
-        return;
-      }
-    } catch(err) {
-      response.status(400).send('Invalid contract');
-      return;
-    }
+    // Bypass the contract ownership validation for demo purposes
+
+    // const contract = new ethers.Contract(projectContract, minimalErc721Abi, provider);
+    // try {
+    //   const contractOwner = await contract.owner();
+    //   if (contractOwner !== wallet) {
+    //     response.status(400).send('Invalid contract');
+    //     return;
+    //   }
+    // } catch(err) {
+    //   response.status(400).send('Invalid contract');
+    //   return;
+    // }
 
     const project = await createProject({
       contract: projectContract,

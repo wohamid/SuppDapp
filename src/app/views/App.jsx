@@ -3,11 +3,18 @@ import { ethers } from 'ethers';
 import Dashboard from "./Dashboard"
 import Signup from "./Signup"
 import Modal from "../components/Modal"
-import getRedis, { testKeys } from "../../../lib/redis";
 import { loadTicketsForOwner } from "../services/db";
 import useSiwe from '../hooks/useSiwe';
+import { SiweMessage } from "siwe";
 
-export const snapId = "local:http://localhost:8080/";
+// export const snapId = "npm:snaps-test-hkyutpf94r8";
+
+const SIGNUP_STATES = {
+  idle: "idle",
+  signInContractInput: "signInContractInput",
+  signupForm: "signupForm",
+  codeGenerated: "codeGenerated",
+};
 
 const App = () => {
   const { ethereum } = window;
@@ -16,31 +23,80 @@ const App = () => {
 
   const [wallet, setWallet] = React.useState();
   const [modalVisibility, setModalVisibility] = React.useState(false);
-  const [isSignedUp, setIsSignedUp] = React.useState(false);
   const [creatingNewProject, setCreatingNewProject] = React.useState(false);
 
   useSiwe(wallet, signer);
 
 
-  // bypass snap
-  const [isSnapInstalled, setIsSnapInstalled] = React.useState(true);
+  const [contractLoggedIn, setContractLoggedIn] = React.useState(null);
+  const [contractAddressInputValue, setContractAddressInputValue] =
+    React.useState("");
   const [tickets, setTickets] = React.useState([]);
-  const [ticketDetails, setTicketDetails] = React.useState({})
+  const [ticketDetails, setTicketDetails] = React.useState({});
+  const [error, setError] = React.useState();
 
   React.useEffect(() => {
     if (!ethereum) return console.log("no ethereum!");
     console.log("have ethereum");
 
-    ethereum.on("connect", console.log);
-    ethereum.on("disconnect", console.log);
     ethereum.on("accountsChanged", (newAccounts) => {
       const [newWallet] = newAccounts;
+      console.log(newWallet);
+      if (!newWallet) signOut();
       setWallet(newWallet);
     });
     initWallet();
     loadTickets();
     // getSnaps();
   }, [ethereum]);
+
+  React.useEffect(() => {
+    if (!wallet) return;
+
+    signIn();
+  }, [wallet]);
+
+  const createSiweMessage = async (address, statement) => {
+    const res = await fetch(`${process.env.BACKEND_HOST}/siwe`, {
+      credentials: "include",
+    });
+    const message = new SiweMessage({
+      domain: window.location.host,
+      address,
+      statement,
+      uri: origin,
+      version: "1",
+      chainId: "1",
+      nonce: await res.text(),
+    });
+    return message.prepareMessage();
+  };
+
+  const setupAuth = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = await provider.send("eth_requestAccounts", []).then(
+      () => provider.getSigner(),
+      () => console.log("user rejected request")
+    );
+    const message = await createSiweMessage(
+      await signer.getAddress(),
+      "Sign in with your wallet"
+    );
+    const signature = await signer.signMessage(message);
+
+    const res = await fetch(`${process.env.BACKEND_HOST}/siwe`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message, signature }),
+      credentials: "include",
+    });
+    if (res.status === 200) {
+      console.log("siwe success");
+    }
+    console.log(await res.text());
+  };
 
   const initWallet = async () => {
     try {
@@ -54,21 +110,36 @@ const App = () => {
     }
   };
 
-  // const getSnaps = async () => {
-  //   const result = await ethereum.request({ method: "wallet_getSnaps" });
+  const signOut = async () => {
+    fetch(`${process.env.BACKEND_HOST}/signout`);
+    return;
+  };
 
-  //   const snapInstalledWithPermission = Boolean(
-  //     result[snapId] && !result[snapId].error
-  //   );
+  const signIn = async (contractAddress) => {
+    if (!wallet) return false;
+    console.log(process.env.BACKEND_HOST);
 
-  //   console.log(result);
-  //   setIsSnapInstalled(snapInstalledWithPermission);
-  // };
+    const urlParams = contractAddress
+      ? `contract=${contractAddress}&wallet=${wallet}`
+      : `wallet=${wallet}`;
+
+    const result = await fetch(
+      `${process.env.BACKEND_HOST}/signin?${urlParams}`
+    );
+
+    if (result.ok) {
+      const contract = await result.json();
+      setContractLoggedIn(contract);
+      return true;
+    }
+
+    return false;
+  };
 
   const loadTickets = async () => {
-    const result = await loadTicketsForOwner('123');
+    const result = await loadTicketsForOwner();
     setTickets(result);
-  }
+  };
 
   const handleOnConnectWalletClick = async () => {
     const [mmWallet] = await ethereum.request({
@@ -76,6 +147,8 @@ const App = () => {
     });
 
     console.log(mmWallet);
+
+    setupAuth();
 
     setWallet(mmWallet);
 
@@ -113,62 +186,95 @@ const App = () => {
   //   messages: [userMessage, myMessage, userMessage, myMessage, userMessage],
   // };
 
-  // const handleInstallSnapClick = async () => {
-  //   const result = await ethereum.request({
-  //     method: "wallet_enable",
-  //     params: [
-  //       {
-  //         wallet_snap: { [snapId]: {} },
-  //       },
-  //     ],
-  //   });
-  //   console.log(result);
-  //   if (!result.snaps[snapId].error) setIsSnapInstalled(true);
-  // };
-
-  const getButtonLabel = () => {
-    if (!wallet) return "Connect Metamask";
-    // if (wallet && !isSnapInstalled) return "Install Snap";
-    return wallet;
-  };
-
-  const getButtonHandler = () => {
-    if (!wallet) return handleOnConnectWalletClick;
-    // if (wallet && !isSnapInstalled) return handleInstallSnapClick;
-    return null;
-  };
-
-
   // React.useEffect(() => {
   //   getTickets();
   // }, []);
 
+  // const handleSignupSubmit = async (projectDetails) => {
+  //   const { contractAddress, projectUrl, projectName } = projectDetails;
+  //   // create project by calling the create endpoint
+  //   const createProjectResult = await fetch(
+  //     `${process.env.BACKEND_HOST}/create`,
+  //     {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         origin: "cypherpunk consensys hackathon",
+  //         contract: contractAddress,
+  //         name: projectName,
+  //       }),
+  //     }
+  //   );
+  //   if (!createProjectResult.ok) {
+  //     const createProjectError = await createProjectResult.text();
+  //     setError(createProjectError);
+  //     return;
+  //   }
+  //   console.log(createProjectResult);
+  //   // if all goes ok, then set the state to display the code and signIn with the provided contract
+  //   const isSignedInSuccessfully = await signIn(contractAddress);
+  //   if (!isSignedInSuccessfully) {
+  //     setError(`Cannot Sign with with contract address ${contractAddress}`);
+  //     return;
+  //   }
 
-  const handleSignupSubmit = () => {
-    setIsSignedUp(true)
-    setCreatingNewProject(false);
-  }
+  //   // fetch generate2
+  //   const generatedCodeResult = await fetch(
+  //     `${process.env.BACKEND_HOST}/generate2?address=${contractAddress}&projectName=${projectName}&page=${projectUrl}`
+  //   );
+  //   console.log(generatedCodeResult);
+  //   if (generatedCodeResult.ok) {
+  //     const codeSnippet = await generatedCodeResult.text();
+  //     console.log(codeSnippet);
+  //     console.log("code generated");
+  //     setGeneratedCode(codeSnippet);
+  //     setSignUpState(SIGNUP_STATES.codeGenerated);
+  //   }
+  // };
 
-  const buttonLabel = getButtonLabel();
-  const buttonClickHandler = getButtonHandler();
-
-  const isSetupComplete = wallet && isSnapInstalled;
+  const buttonLabel = wallet ?? "Connect Metamask";
 
   // const handleRowClick = () => null
 
-  
   const handleRowClick = (ticket) => {
-    console.log('In app');
+    console.log("In app");
     setTicketDetails(ticket);
     setModalVisibility(!modalVisibility);
   };
 
-  const handleTicketChanged = async (ticket) => {
-    console.log('Ticket changed');
+  const handleTicketChanged = (ticket) => {
+    console.log("Ticket changed");
     console.log(ticket);
     setTicketDetails(ticket);
-    await loadTickets();
-  }
+    loadTickets();
+  };
+
+  const handleSignIn = () => {
+    setSignUpState(SIGNUP_STATES.signInContractInput);
+  };
+  const handleSignUp = () => {
+    setSignUpState(SIGNUP_STATES.signupForm);
+  };
+
+  const handleContractAddressValueChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setContractAddressInputValue(value);
+  };
+
+  const handleContractAddressInputSubmit = async () => {
+    const isSignedIn = await signIn(contractAddressInputValue);
+    if (isSignedIn) setSignUpState(SIGNUP_STATES.idle);
+  };
+
+  const handleCodeGenerationDoneClick = () => {
+    setSignUpState(SIGNUP_STATES.idle);
+  };
+
+  const isSignedIn = contractLoggedIn;
 
   return (
     <div>
@@ -177,17 +283,82 @@ const App = () => {
           <a className="btn btn-ghost normal-case text-xl">SuppDapp</a>
         </div>
         <div className="flex-none">
-          <button className="btn btn-primary" onClick={buttonClickHandler}>
+          <button
+            className="btn btn-primary"
+            onClick={handleOnConnectWalletClick}
+          >
             {buttonLabel}
           </button>
         </div>
       </div>
-      {!creatingNewProject &&  <button onClick={() => {setCreatingNewProject(true)}}>Create new project</button>}
       <div className="flex h-screen">
-        <div className="justify-center items-center m-auto">
-          {!isSetupComplete && !creatingNewProject && <img src={"assets/landing.png"} />}
-          {isSetupComplete && !creatingNewProject && <Dashboard tickets={tickets} onRowClick={(ticket) => handleRowClick(ticket)} />}
-          {creatingNewProject && <Signup ethereum={ethereum} onSubmit={handleSignupSubmit} />}
+        <div className="justify-center items-center m-auto flex flex-col">
+          {!wallet && <img className={"max-w-7xl"} src={"landing.png"} />}
+          {wallet && !isSignedIn && signupState === SIGNUP_STATES.idle && (
+            <div>
+              <button className="btn btn-primary m-10" onClick={handleSignIn}>
+                Sign in
+              </button>
+              <button className="btn btn-primary m-10" onClick={() => {setCreatingNewProject(true)}}>
+                Sign up
+              </button>
+            </div>
+          )}
+          {wallet &&
+            !isSignedIn &&
+            signupState === SIGNUP_STATES.signInContractInput && (
+              <div className="form-control">
+                <div className="m-5">
+                  <label className="label">
+                    <span className="label-text">Contract Address</span>
+                  </label>
+                  <label className="input-group">
+                    <input
+                      type="text"
+                      placeholder="0x123"
+                      className="input input-bordered"
+                      name={"contractAddress"}
+                      value={contractAddressInputValue}
+                      onChange={handleContractAddressValueChange}
+                    />
+                  </label>
+                </div>
+                <button
+                  className="btn btn-primary "
+                  onClick={handleContractAddressInputSubmit}
+                >
+                  Submit
+                </button>
+              </div>
+            )}
+          {wallet &&
+            // !isSignedIn &&
+            creatingNewProject && (
+              <Signup onFinish={() => {setCreatingNewProject(false)}} />
+            )}
+          {wallet && isSignedIn && signupState === SIGNUP_STATES.idle && (
+            <Dashboard tickets={tickets} onRowClick={handleRowClick} />
+          )}
+          {error && (
+            <div className="alert alert-error shadow-lg my-20">
+              <div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="stroke-current flex-shrink-0 h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span>Error! {error}</span>
+              </div>
+            </div>
+          )}
           {/* {isSignedUp && <Dashboard tickets={tickets} onRowClick={handleRowClick} />} */}
         </div>
         <Modal

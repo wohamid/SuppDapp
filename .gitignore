@@ -2,10 +2,11 @@ node_modules
 .vercel
 .parcel-cache
 .next
+.env
 public/*
+!public/landing.png
 !public/simpletest.html
 !public/bunny_whisper.png
 .data
 dist/
-
 .idea/

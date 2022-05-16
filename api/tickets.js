@@ -25,7 +25,6 @@ export default allowCors(async function handler(
 
     //const test = await getTicketsForOwner('123');
     if (request.method.toLowerCase() === 'get') {
-
         const result = await getTicketsForOwner(owner);
 
         response.json(result);
@@ -41,36 +40,6 @@ export default allowCors(async function handler(
     } else  if (request.method.toLowerCase() === 'delete') {
         await resetOwnerKeys(owner);
     }
-    // In case deleting is needed
-
-    // TODO: owner from cookie
 
     response.json(null);
-
-    // if (!siwe) {
-    //     response.status(401).send(`No auth`);
-    //     return;
-    // }
-    // let info, project;
-    // try {
-    //     info = decryptObj(key, siwe);
-    //     project = decryptObj(key, projectKey);
-    // } catch (e) {
-    //     console.error(e)
-    //     response.status(401).send(`Invalid auth`);
-    // }
-    // // There's no way for the page to lie about origin AFAIR, so this is a valid check
-    // // if origin is falsy, it's either not a cross-origin request (local testing) or it'd fail on establishing CORS
-    // if(origin && origin !== project.page) {
-    //     throw Error(`This is not this project's page`)
-    // }
-    // console.log(project, info)
-    // // use address from info and wallet from project to fetch the messages between the two
-    // const msg = await getMessagesBetween(project.address, info.address)
-
-    // response.json({
-    //     address: info.address,
-    //     messages: msg
-    // })
-
 })

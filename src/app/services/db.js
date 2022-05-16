@@ -1,6 +1,6 @@
 const hosturl = process.env.BACKEND_HOST;
 
-export async function loadTicketsForOwner(owner) {
+export async function loadTicketsForOwner() {
     const path = `${hosturl}/tickets`;
 
     const test = await fetch(path);
