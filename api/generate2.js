@@ -10,7 +10,7 @@ export default async function handler(
   response
 ) {
   const host = request.headers.host;
-  const selfURL = `http://${host.includes('127.0.0.') ? `${request.headers['x-forwarded-host']}` : host}/`
+  const selfURL = `https://${host.includes('127.0.0.') ? `${request.headers['x-forwarded-host']}` : host}/`
   
   const address = request.query.address
   const projectInfo = await getProjectByContract(address);
