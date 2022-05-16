@@ -132,7 +132,7 @@ const App = () => {
   };
 
   const loadTickets = async () => {
-    const result = await loadTicketsForOwner("123");
+    const result = await loadTicketsForOwner();
     setTickets(result);
   };
 
