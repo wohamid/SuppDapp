@@ -46,7 +46,7 @@ export default async function handler(request, response) {
     try {
       const projectContract = savedContract ?? request.query?.contract;
 
-      if (!projectContract) response.status(400).send("Invalid contract");
+      if (!projectContract) response.status(400).send("contract not supplied");
 
       const isContractOwner = await verifyContractOwnership(
         projectContract,
@@ -54,7 +54,7 @@ export default async function handler(request, response) {
       );
 
       if (!isContractOwner) {
-        response.status(400).send("Invalid contract");
+        response.status(400).send("contract ownership failed");
         return;
       }
 
