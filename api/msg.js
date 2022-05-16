@@ -2,7 +2,7 @@ import Cookies from 'cookies'
 import { decryptObj } from '../lib/crypt.js';
 import { allowCors } from '../lib/corsHelper.js';
 import { getTicketsBetween, appendMessage } from '../lib/persistence.js';
-const owner = process.env.OWNER;
+
 
 /**
  * 
@@ -42,11 +42,9 @@ export default allowCors(async function handler(
     let tickets;
     // use address from info and wallet from project to fetch the messages between the two
     if(request.body) {
-        // owner hardcoded, should be project.address
-        tickets = await appendMessage(owner, info.address, info.address, request.body.ticket, request.body.message)
+        tickets = await appendMessage(project.address, info.address, info.address, request.body.ticket, request.body.message)
     } else {
-        // owner hardcoded, should be project.address
-        tickets = await getTicketsBetween(owner, info.address)
+        tickets = await getTicketsBetween(project.address, info.address)
     }
 
     response.json({
