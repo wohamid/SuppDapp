@@ -72,7 +72,9 @@ const App = () => {
       ? `contract=${contractAddress}&wallet=${wallet}`
       : `wallet=${wallet}`;
 
-    const path = new URL(`/signin?${urlParams}`, BACKEND_ADDR).href;
+    console.log(BACKEND_ADDR);
+
+    const path = new URL(`/api/signin?${urlParams}`, BACKEND_ADDR).href;
     const result = await fetch(path);
 
 
