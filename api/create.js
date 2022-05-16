@@ -42,7 +42,7 @@ export default async function handler(request, response) {
     const wallet = siwe.address;
 
     // const wallet = request.body.wallet // for testing
-    const projectOrigin = new URL('/', request.body.origin).href;
+    const projectOrigin = new URL(request.body.origin).href;
     const projectContract = request.body.contract;
     const projectName = request.body.name;
 
