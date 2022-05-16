@@ -1,7 +1,7 @@
 const hosturl = process.env.BACKEND_HOST;
 
 export async function loadTicketsForOwner(owner) {
-    const path = `${hosturl}/tickets`;
+    const path = `${hosturl}/tickets?owner=${owner}`;
 
     const test = await fetch(path);
     const parsed = await test.json();
@@ -9,7 +9,7 @@ export async function loadTicketsForOwner(owner) {
     return parsed;
 }
 
-export async function respondToTicket(ticketId, message, user) {
+export async function respondToTicket(owner, ticketId, message, user) {
   const path = `${hosturl}/tickets`;
   try {
     const res = await fetch(path, {
@@ -18,7 +18,8 @@ export async function respondToTicket(ticketId, message, user) {
       body: JSON.stringify({
         ticketId,
         message,
-        user
+        user,
+        owner
       })
     });
 

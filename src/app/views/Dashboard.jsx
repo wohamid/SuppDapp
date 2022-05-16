@@ -1,11 +1,15 @@
 import React from "react";
 
-const Dash = ({ tickets, onRowClick }) => {
-  const handleRowClick = (ticketId) => {
+const Dash = ({ tickets, onRowClick, onTicketUpdate }) => {
+
+  const handleRowClick = (ticket) => {
     // console.log(`row of ticket ${ticketId} pressed`);
     // console.log("open modal");
+    const ticketId = ticket.id;
     onRowClick(ticketId);
   };
+
+  setTimeout(onTicketUpdate, 1000);
 
   return tickets.length < 1 ? (
     <div className="alert shadow-lg">

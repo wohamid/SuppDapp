@@ -27,6 +27,7 @@ const App = () => {
     React.useState("");
   const [signupState, setSignUpState] = React.useState(SIGNUP_STATES.idle);
   const [tickets, setTickets] = React.useState([]);
+  const [ticketIdOpened, setTicketIdOpened] = React.useState('')
   const [ticketDetails, setTicketDetails] = React.useState({});
   const [generatedCode, setGeneratedCode] = React.useState({});
   const [error, setError] = React.useState();
@@ -132,7 +133,7 @@ const App = () => {
   };
 
   const loadTickets = async () => {
-    const result = await loadTicketsForOwner("123");
+    const result = await loadTicketsForOwner(contractLoggedIn);
     setTickets(result);
   };
 
@@ -232,9 +233,10 @@ const App = () => {
 
   // const handleRowClick = () => null
 
-  const handleRowClick = (ticket) => {
+  const handleRowClick = (ticketId) => {
     console.log("In app");
-    setTicketDetails(ticket);
+    setTicketIdOpened(ticketId)
+    // setTicketDetails(ticket);
     setModalVisibility(!modalVisibility);
   };
 
@@ -338,7 +340,7 @@ const App = () => {
               <Signup onSubmit={handleSignupSubmit} />
             )}
           {wallet && isSignedIn && signupState === SIGNUP_STATES.idle && (
-            <Dashboard tickets={tickets} onRowClick={handleRowClick} />
+            <Dashboard tickets={tickets} onRowClick={handleRowClick} onTicketUpdate={loadTickets} />
           )}
           {error && (
             <div className="alert alert-error shadow-lg my-20">
@@ -363,10 +365,13 @@ const App = () => {
           {/* {isSignedUp && <Dashboard tickets={tickets} onRowClick={handleRowClick} />} */}
         </div>
         <Modal
+          contractAddress={contractLoggedIn}
           isVisible={modalVisibility}
           onClose={handleCloseModal}
-          ticket={ticketDetails}
-          onTicketChanged={handleTicketChanged}
+          // ticket={ticketDetails}
+          tickets={tickets}
+          selectedTicketId={ticketIdOpened}
+          // onTicketChanged={handleTicketChanged}
         />
       </div>
     </div>

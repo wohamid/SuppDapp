@@ -1,5 +1,5 @@
 import React from "react";
-import MessageList from "../components/MessageList"
+import MessageList from "../components/MessageList";
 import { respondToTicket } from "../services/db";
 
 const emptyState = {
@@ -14,27 +14,41 @@ const emptyTicket = {
   states: [],
 };
 
-export default function Modal({ isVisible, onClose, ticket, onTicketChanged }) {
-  const hasTicket = Boolean(ticket);
+export default function Modal({
+  contractAddress,
+  isVisible,
+  onClose,
+  tickets,
+  selectedTicketId,
+  onTicketChanged,
+}) {
+  const hasTicket = Boolean(selectedTicketId !== "");
   const shouldRender = isVisible && hasTicket;
   const classNames = shouldRender ? "modal modal-open" : "modal";
-  const [messageToSend, setMessageToSend] = React.useState('')
+  const [messageToSend, setMessageToSend] = React.useState("");
 
   const handleChangeInput = (event) => {
     if (event && event.target && event.target.value) {
       setMessageToSend(event.target.value);
     } else {
-      setMessageToSend('');
+      setMessageToSend("");
     }
   };
 
   const sendMesage = async (event) => {
     if (messageToSend) {
-      const result = await respondToTicket(ticket.id, messageToSend, ticket.user);
-      onTicketChanged(result);
-      setMessageToSend('');
+      const result = await respondToTicket(
+        contractAddress,
+        ticket.id,
+        messageToSend,
+        ticket.user
+      );
+      // onTicketChanged(result);
+      setMessageToSend("");
     }
-  }
+  };
+
+  const ticket = tickets.find((ticket) => ticket.id === selectedTicketId);
 
   return (
     <div className={classNames}>
@@ -47,7 +61,7 @@ export default function Modal({ isVisible, onClose, ticket, onTicketChanged }) {
         </label>
         <h3 className="font-bold text-lg">{ticket?.title}</h3>
         <p className="py-4">{ticket?.description}</p>
-        <MessageList messages={ticket.messages} />
+        <MessageList messages={ticket?.messages} />
         <div className="flex items-center mt-5">
           <input
             type="text"
@@ -56,7 +70,9 @@ export default function Modal({ isVisible, onClose, ticket, onTicketChanged }) {
             value={messageToSend}
             onChange={handleChangeInput}
           />
-          <button className="btn btn-circle" onClick={sendMesage}>&gt;</button>
+          <button className="btn btn-circle" onClick={sendMesage}>
+            &gt;
+          </button>
         </div>
       </div>
     </div>
