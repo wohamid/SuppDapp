@@ -15,6 +15,7 @@ const Signup = ({ onFinish }) => {
   const [projectUrl, setprojectUrl] = React.useState("");
   const [contractAddress, setcontractAddress] = React.useState("");
   const [script, setScript] = React.useState('');
+  const [verified, setVerified] = React.useState(false);
 
   const handleInputChange = (event) => {
     const {
@@ -37,7 +38,7 @@ const Signup = ({ onFinish }) => {
 
   const verifyProject = useCallback(async () => {
     const result = await verify(contractAddress)
-    console.log('verify result', result);
+    setVerified(true);
   }, [contractAddress])
 
   const handleSubmit = async () => {
@@ -62,9 +63,9 @@ const Signup = ({ onFinish }) => {
           <>
             <CodeSnippet
             code={script}
-            onDoneClick={onFinish}
+            onButtonClick={verified ? onFinish : verifyProject}
+            buttonText={verified ? 'Done' : 'Verify site'}
           />
-          <button onClick={verifyProject}>Verify</button>
           </>
         ): (
           <>
