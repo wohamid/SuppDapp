@@ -5,9 +5,9 @@ import { DUMMY_CONTRACTS } from "./create.js";
 // import { createProject } from "../lib/persistence.js";
 // import { weightSrvRecords } from "ioredis/built/cluster/util.js";
 
-// const provider = ethers.getDefaultProvider("rinkeby", {
-//   infura: process.env.INFURA_PROJECT_ID,
-// });
+const provider = ethers.getDefaultProvider("rinkeby", {
+  infura: process.env.INFURA_PROJECT_ID,
+});
 
 const minimalErc721Abi = [
   {
