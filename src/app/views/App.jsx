@@ -174,17 +174,6 @@ const App = () => {
     content: "Hi, how can I help you",
   };
 
-  // const ticketDetails = {
-  //   id: 1,
-  //   title: "Cannot Buy NFT",
-  //   description: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
-  //   messages: [userMessage, myMessage, userMessage, myMessage, userMessage],
-  // };
-
-  // React.useEffect(() => {
-  //   getTickets();
-  // }, []);
-
   const handleSignupSubmit = async (projectDetails) => {
     const { contractAddress, projectUrl, projectName } = projectDetails;
     // create project by calling the create endpoint
@@ -362,36 +351,18 @@ const App = () => {
               </div>
             </div>
           )}
-          {/* {isSignedUp && <Dashboard tickets={tickets} onRowClick={handleRowClick} />} */}
         </div>
         <Modal
           contractAddress={contractLoggedIn}
           isVisible={modalVisibility}
           onClose={handleCloseModal}
-          // ticket={ticketDetails}
           tickets={tickets}
           selectedTicketId={ticketIdOpened}
-          // onTicketChanged={handleTicketChanged}
         />
       </div>
     </div>
   );
 };
 
-// async function loadTickets() {
-//   return new Promise((resolve) => {
-//     const tickets = await loadTicketsForOwner(999)
-//     console.log(tickets);
-
-//     resolve([{
-//       id: "Ticket 1",
-//       type: "General Support",
-//       state: "In Progress",
-//       commState: "Waiting for a reply",
-//       submittedBy: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
-//       description: "Cannot Buy NFT",
-//     }]);
-//   })
-// }
 
 export default App;
