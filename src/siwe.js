@@ -4,9 +4,9 @@ import { SiweMessage } from 'siwe';
 const domain = window.location.host;
 const origin = window.location.origin;
 
-const BACKEND_ADDR = origin;
+const BACKEND_ADDR = new URL(`${origin}/api`).href
 async function createSiweMessage(address, statement) {
-    const res = await fetch(`${BACKEND_ADDR}/api/siwe`, {
+    const res = await fetch(`${BACKEND_ADDR}/siwe`, {
         credentials: 'include',
     });
     const message = new SiweMessage({
@@ -40,7 +40,7 @@ async function signInWithEthereum() {
     );
     const signature = await signer.signMessage(message);
 
-    const res = await fetch(`${BACKEND_ADDR}/api/siwe`, {
+    const res = await fetch(`${BACKEND_ADDR}/siwe`, {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
