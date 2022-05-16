@@ -13,7 +13,6 @@ const Dash = ({ tickets, onRowClick, onTicketUpdate }) => {
   ]);
 
   React.useEffect(() => {
-    console.log("why");
     updateTickets();
   });
 

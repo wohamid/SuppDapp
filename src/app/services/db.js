@@ -1,7 +1,8 @@
 const hosturl = process.env.BACKEND_HOST;
 
 export async function loadTicketsForOwner(owner) {
-    const path = `${hosturl}/tickets?owner=${owner}`;
+    
+    const path = new URL(`/api/tickets?owner=${owner}`, hosturl).href;
 
     const test = await fetch(path);
     const parsed = await test.json();
@@ -10,7 +11,7 @@ export async function loadTicketsForOwner(owner) {
 }
 
 export async function respondToTicket(owner, ticketId, message, user) {
-  const path = `${hosturl}/tickets`;
+    const path = new URL(`/api/tickets`, hosturl).href;
   try {
     const res = await fetch(path, {
       method: 'POST',

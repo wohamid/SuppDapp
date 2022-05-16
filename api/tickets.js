@@ -25,8 +25,6 @@ export default allowCors(async function handler(request, response) {
   //const test = await getTicketsForOwner('123');
   if (request.method.toLowerCase() === "get") {
     const owner = request.query?.owner;
-    console.log(owner);
-    console.log(owner);
 
     if (!owner) {
       response.status(404).send("no contract provided");

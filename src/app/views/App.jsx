@@ -123,6 +123,7 @@ const App = () => {
       `${process.env.BACKEND_HOST}/signin?${urlParams}`
     );
 
+
     if (result.ok) {
       const contract = await result.json();
       setContractLoggedIn(contract);
