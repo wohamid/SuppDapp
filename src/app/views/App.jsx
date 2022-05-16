@@ -87,10 +87,10 @@ const App = () => {
     return false;
   };
 
-  const loadTickets = async () => {
+  const loadTickets = React.useCallback(async () => {
     const result = await loadTicketsForOwner(contractLoggedIn);
     setTickets(result);
-  };
+  }, [contractLoggedIn]);
 
   const handleOnConnectWalletClick = async () => {
     const [mmWallet] = await ethereum.request({
